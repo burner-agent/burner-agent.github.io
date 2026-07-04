@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nepher Robotics — Subnet Intel</title>
+<script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
+<style>
+  :root {
+    --bg: #0d1117; --surface: #161b22; --surface-elevated: #21262d;
+    --border: #30363d; --text-primary: #e6edf3; --text-secondary: #8b949e; --text-muted: #484f58;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text-primary); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  .prose h1,.prose h2,.prose h3 { color:var(--text-primary); font-weight:600; margin:1em 0 0.4em; }
+  .prose h1 { font-size:1.05rem; } .prose h2 { font-size:0.95rem; } .prose h3 { font-size:0.875rem; color:var(--text-secondary); }
+  .prose p { margin:0.5em 0; line-height:1.65; } .prose ul,.prose ol { padding-left:1.25em; margin:0.5em 0; }
+  .prose li { margin:0.25em 0; } .prose strong { color:var(--text-primary); font-weight:600; }
+  .prose code { background:var(--surface-elevated); padding:0.1em 0.3em; border-radius:3px; font-size:0.85em; color:#79c0ff; }
+  #chat-msg { margin-top:8px; } .chat-q { margin-top:16px; }
+  .chat-q-label { font-size:11px; font-weight:600; color:var(--text-muted); margin-bottom:4px; }
+  .chat-q-bubble { background:var(--surface-elevated); padding:10px 14px; border-radius:12px; font-size:14px; color:var(--text-primary); }
+  .chat-a-label { font-size:11px; font-weight:600; color:#58a6ff; margin-bottom:4px; margin-top:16px; }
+  .chat-a-body { font-size:14px; color:var(--text-secondary); line-height:1.6; }
+</style>
+</head>
+<body>
+
+<!-- Fixed header -->
+<div style="position:fixed;top:0;left:0;right:0;z-index:50;background:var(--surface);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:14px">
+  <a href="/" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:var(--surface-elevated);color:var(--text-primary);text-decoration:none;font-size:18px;flex-shrink:0">&#8592;</a>
+  <div style="min-width:0">
+    <div style="font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Nepher Robotics</div>
+    <div style="font-size:11px;color:var(--text-muted)">SN49 · Robotics &amp; Drones</div>
+  </div>
+  <div style="margin-left:auto;flex-shrink:0;text-align:right"><div style="font-size:14px;font-weight:700;color:#d29922">5.5/10</div><div style="font-size:10px;color:var(--text-muted)">Developing</div></div>
+</div>
+
+<!-- Scrollable content -->
+<div style="padding: 72px 16px 100px 16px; max-width: 680px; margin: 0 auto;">
+
+  <div style="margin-bottom:16px"><div style="height:4px;border-radius:2px;background:var(--border);overflow:hidden"><div style="width:55%;height:100%;background:#d29922"></div></div><div style="font-size:12px;color:var(--text-muted);margin-top:6px">Developing · Isaac Lab RL policy tournaments are a credible benchmark, but winner-takes-all emissions and sim-only evaluation make it</div></div>
+
+  
+
+  <div id="summary-text" style="font-size:15px;line-height:1.65;color:var(--text-secondary);margin-bottom:8px">Miners submit trained reinforcement-learning policies (`best_policy.pt`) that validators evaluate in standardized Isaac Lab robotics simulation environments. Scoring is tournament-style and **winner-takes-all** — the single best-performing policy on the active task receives all subnet emissions, with no proportional rewards for runners-up.</div>
+
+  <button id="expand-btn" onclick="toggleFull()" style="font-size:13px;color:var(--text-muted);background:none;border:none;cursor:pointer;padding:4px 0;margin-bottom:16px">Read full analysis ↓</button>
+  <div id="full-text" style="display:none;font-size:14px;line-height:1.65;color:var(--text-secondary);margin-bottom:16px" class="prose"></div>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px"><a href="https://github.com/nepher-ai/nepher-subnet" target="_blank" style="display:inline-flex;align-items:center;padding:8px 16px;border-radius:10px;border:1px solid var(--border);font-size:13px;font-weight:500;color:#58a6ff;text-decoration:none;background:var(--surface-elevated)">GitHub ↗</a><a href="https://www.nepher.ai/" target="_blank" style="display:inline-flex;align-items:center;padding:8px 16px;border-radius:10px;border:1px solid var(--border);font-size:13px;font-weight:500;color:#58a6ff;text-decoration:none;background:var(--surface-elevated)">Website ↗</a><button onclick="loadEmissions()" style="display:inline-flex;align-items:center;padding:8px 16px;border-radius:10px;border:1px solid var(--border);font-size:13px;font-weight:500;color:#58a6ff;text-decoration:none;background:var(--surface-elevated);cursor:pointer;border:1px solid var(--border)">Emissions ↗</button></div>
+  <div id="emissions-section" style="display:none;margin-top:4px;margin-bottom:16px;padding:14px;border-radius:12px;background:var(--surface-elevated);border:1px solid var(--border)"></div>
+  <div style="margin-top:16px;padding:12px 14px;border-radius:10px;background:var(--surface-elevated);font-size:13px"><span style="color:var(--text-muted)">Market: </span><span style="color:#d29922;font-weight:600">$90B</span><div style="color:var(--text-muted);margin-top:4px;font-size:12px">Boston Dynamics (20B), Figure AI (39B), 1X Technologies (10B est), Tesla Optimus (Tesla 1.6T total)</div></div>
+  <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)"><div style="font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:0.05em;margin-bottom:10px">FROM THEIR SITE<span style="font-weight:400;margin-left:8px">2026-05-23</span></div><div style="font-size:13px;line-height:1.6;color:var(--text-secondary)"><div style="margin-bottom:8px">- **Positioning**: Robotics simulation platform built on NVIDIA Isaac Sim &amp; Isaac Lab, with Omniverse PhysX/RTX for Sim2Real fidelity. Differentiator is a competition-driven model: engineers train Isaac Lab policies, submit them to live tracks, and get benchmarked on accuracy, energy efficiency, and training time. Also pitches natural-language control over Isaac Lab configs and a USD asset library for drag-and-drop prototyping.</div>
+<div style="margin-bottom:8px">- **Traction (self-reported)**: Site claims a &quot;Live platform&quot; with **12+ active tracks**, **3,400+ robotics engineers**, **48 countries**, and a **$250K+ prize pool**. No independent metrics, no miner counts, no TVL — these are marketing figures, not on-chain data.</div>
+<div style="margin-bottom:8px">- **Product surface**: Four named pillars — Tournament (policy benchmarking), EnvHub (environments), SimStore (assets), Hackathon (themed events like &quot;Kitchen Humanoids&quot;, &quot;Off-road Navigation&quot;). A six-step custom pipeline is offered: spec → prototype sim → concept review → digital-twin modeling → precision training → Sim-to-Real deployment.</div>
+<div style="margin-bottom:8px">- **Onboarding**: Framed as &quot;spin up a Nepher account, pick an environment, launch a training run in minutes.&quot; A Nepher CLI and docs are referenced. No explicit miner hardware/stake requirements are listed on the page — the site speaks in &quot;engineers&quot; and &quot;participants,&quot; not Bittensor miner terms.</div>
+<div style="margin-bottom:8px">- **Roadmap signals**: &quot;Quadruped Robot Sprint&quot; hackathon listed as **Coming soon** with pre-registration. Winning tournament solutions are stated to be open-sourced back to the community. No dated milestones.</div>
+<div style="margin-bottom:8px">- **Team / backing**: None disclosed on this page. NVIDIA Isaac Sim/Isaac Lab/Omniverse are cited as the tech stack (&quot;Powered by NVIDIA&quot;), but no partnership claim, no named founders, no investors, no advisors. Corporate entity shown as Nepher Robotics, Inc., © 2026.</div></div></div>
+
+  <div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--border)">
+    <div id="chat-msg"></div>
+    <div id="ask-loading" style="display:none;font-size:13px;color:var(--text-muted);padding:8px 0">Fetching live validator code...</div>
+  </div>
+
+</div>
+
+<!-- Fixed bottom input -->
+<div style="position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:12px 16px;padding-bottom:max(16px,env(safe-area-inset-bottom))">
+  <div style="display:flex;gap:10px;max-width:680px;margin:0 auto">
+    <input id="ask-input" type="text" placeholder="Ask disabled in static snapshot"
+      style="flex:1;background:var(--surface-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 16px;font-size:16px;color:var(--text-primary);outline:none"
+      onkeydown="if(event.key==='Enter')ask()">
+    <button onclick="ask()" style="background:#58a6ff22;border:1px solid #58a6ff55;color:#58a6ff;border-radius:12px;padding:12px 20px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap">Ask</button>
+  </div>
+</div>
+
+<script>
+const netuid = 49;
+let chatHistory = [];
+let fullText = '';
+
+window.addEventListener('DOMContentLoaded', () => {
+  const raw = `**1. What miners do**
+Miners train an RL agent for the currently-active robotics task and upload it via \`nepher-miner submit\`. Submissions are agent directories containing a PyTorch checkpoint (\`best_policy/best_policy.pt\`), a \`source/<task_module>/\` defining the task, and inference scripts (\`scripts/rsl_rl/play.py\`). The agent is zipped, signed with the miner\'s hotkey, and pushed to Nepher\'s tournament backend.
+
+**2. How the validator scores**
+The reward function is not local — it\'s the **tournament outcome** computed by the Nepher backend:
+- The validator (\`AgentEvaluator\`) downloads each submitted agent, runs a pre-flight model-weights check (loads the \`.pt\` in an isolated subprocess with a 120s timeout and a 2 GB size cap), then executes the policy inside a Docker sandbox using the task module declared in \`config.task_config.task_module\`.
+- The sandbox produces an \`evaluation_result.json\` that the validator submits back to the API. The backend aggregates results across validators and runs the tournament; validators then set on-chain weights according to the **tournament winner**, per the README: *&quot;The tournament winner receives all weights.&quot;*
+- Note: the actual environment-reward metric (success rate / episode return / task-specific score) lives in the Isaac Lab task definition shipped under \`source/<task_module>/\`, not in the validator code — the validator is a thin evaluation harness.
+
+**3. What maximizes emissions**
+- Train a policy that beats every other miner on the active task in Isaac Lab — there is no partial credit; rank #2 earns nothing.
+- Submit a clean agent matching the required structure (\`best_policy/best_policy.pt\`, \`source/<task_module>/\`) so validation passes and the agent actually reaches evaluation.
+- Keep the checkpoint under 2 GB and loadable via \`torch.load(..., weights_only=True)\` to avoid pre-flight rejection.
+
+**4. Penalties / slashing**
+There is no on-chain slashing of miners in the code shown, but submissions are silently dropped if:
+- The policy file exceeds \`MAX_POLICY_SIZE_MB = 2048\` (raised as non-recoverable \`EvaluationError\`).
+- Weight-loading times out at 120s or fails (corrupt / adversarial \`.pt\` → non-recoverable failure).
+- The agent directory is missing required structure (\`best_policy/\`, \`best_policy.pt\`, \`source/\` with at least one task module).
+- The sandboxed evaluation itself crashes — the validator reports failure via \`submit_failed_evaluation\` and that agent gets no score for the round.
+
+Failed evaluations don\'t reduce stake, but they forfeit any chance at the winner-takes-all payout for that tournament.`;
+  fullText = raw;
+  const full = document.getElementById('full-text');
+  full.innerHTML = (typeof marked !== 'undefined') ? marked.parse(raw) : raw;
+});
+
+function toggleFull() {
+  const full = document.getElementById('full-text');
+  const btn = document.getElementById('expand-btn');
+  if (full.style.display === 'none') {
+    full.style.display = 'block';
+    btn.textContent = 'Hide full analysis ↑';
+  } else {
+    full.style.display = 'none';
+    btn.textContent = 'Read full analysis ↓';
+  }
+}
+
+function addMessage(role, text) {
+  const container = document.getElementById('chat-msg');
+  const div = document.createElement('div');
+  div.className = 'chat-q';
+  if (role === 'user') {
+    div.innerHTML = '<div class="chat-q-label">You</div><div class="chat-q-bubble">' + text.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>';
+  } else {
+    const parsed = (typeof marked !== 'undefined') ? marked.parse(text) : text;
+    div.innerHTML = '<div class="chat-a-label">Claude</div><div class="chat-a-body prose">' + parsed + '</div>';
+  }
+  container.appendChild(div);
+  div.scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+
+function ask() {
+  const input = document.getElementById('ask-input');
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+  addMessage('user', q);
+  chatHistory.push({role: 'user', content: q});
+  document.getElementById('ask-loading').style.display = 'block';
+  fetch('/api/subnets/' + netuid + '/ask', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({question: q, history: chatHistory.slice(0,-1)})
+  })
+  .then(r => r.json())
+  .then(resp => {
+    document.getElementById('ask-loading').style.display = 'none';
+    const answer = resp.answer || 'No response.';
+    chatHistory.push({role: 'assistant', content: answer});
+    addMessage('assistant', answer);
+  })
+  .catch(() => {
+    document.getElementById('ask-loading').style.display = 'none';
+    addMessage('assistant', 'Failed — try again.');
+  });
+}
+
+function loadEmissions() {
+  const el = document.getElementById('emissions-section');
+  if (el.dataset.loaded === '1') {
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    return;
+  }
+  el.dataset.loaded = '1';
+  el.style.display = 'block';
+  el.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:12px 0">Loading emissions...</div>';
+  fetch('/api/subnets/49/emissions')
+    .then(r => r.json())
+    .then(resp => {
+      const data = resp.rows || [];
+      const rob = resp.recycle_or_burn || 'Burn';
+      if (!data.length) { el.innerHTML = '<div style="color:var(--text-muted);font-size:13px">No emission data yet.</div>'; return; }
+      const robColor = rob === 'Recycle' ? '#d29922' : '#f85149';
+      const robLow = rob.toLowerCase();
+      let html = '<div style="font-size:11px;color:var(--text-muted);margin-bottom:12px">Mode: <span style="color:' + robColor + ';font-weight:600">' + rob + '</span> &middot; <span style="color:#f85149">Red = owner key (' + robLow + 'd)</span> &middot; <span style="color:#f97316">Orange = owner miner (also ' + robLow + 'd)</span></div>';
+      const ownerRows = data.filter(d => d.is_owner || d.is_primary_owner);
+      if (ownerRows.length > 1) {
+        const ownerPct = ownerRows.reduce((s, d) => s + d.share_pct, 0);
+        const ownerList = ownerRows.map(d => 'UID ' + d.uid).join(', ');
+        html += '<div style="background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.3);border-radius:6px;padding:8px 10px;margin-bottom:10px;font-size:11px;color:#f97316;line-height:1.6">' +
+          '<strong>Same operator controls ' + ownerRows.length + ' UIDs:</strong> ' + ownerList + '<br>' +
+          '<span style="color:#9ca3af">Combined: <strong style="color:#f97316">' + ownerPct.toFixed(1) + '%</strong> of miner emissions — all ' + robLow + 'd</span>' +
+        '</div>';
+      }
+      html += '<div style="space-y:4px">';
+      const max = Math.max(...data.map(d => d.share_pct));
+      data.slice(0, 30).forEach(d => {
+        const pct = d.share_pct || 0;
+        const barW = max > 0 ? Math.round((pct / max) * 100) : 0;
+        const color = d.is_primary_owner ? '#ef4444' : d.is_owner ? '#f97316' : '#3b82f6';
+        const label = d.is_primary_owner ? ' (owner key)' : d.is_owner ? ' (owner miner)' : '';
+        html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">' +
+          '<div style="font-size:11px;color:var(--text-muted);width:50px;flex-shrink:0">UID ' + d.uid + '</div>' +
+          '<div style="flex:1;height:8px;border-radius:4px;background:var(--border);overflow:hidden">' +
+            '<div style="width:' + barW + '%;height:100%;background:' + color + ';border-radius:4px"></div>' +
+          '</div>' +
+          '<div style="font-size:11px;font-family:monospace;width:52px;text-align:right;flex-shrink:0;color:var(--text-secondary)">' + pct.toFixed(2) + '%</div>' +
+          '<div style="font-size:10px;color:var(--text-muted)">' + label + '</div>' +
+          '</div>';
+      });
+      if (data.length > 30) html += '<div style="font-size:11px;color:var(--text-muted)">' + (data.length - 30) + ' more miners...</div>';
+      html += '</div>';
+      el.innerHTML = html;
+    })
+    .catch(() => { el.innerHTML = '<div style="color:#f85149;font-size:13px">Failed to load.</div>'; });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404—GEN — Subnet Intel</title>
+<script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
+<style>
+  :root {
+    --bg: #0d1117; --surface: #161b22; --surface-elevated: #21262d;
+    --border: #30363d; --text-primary: #e6edf3; --text-secondary: #8b949e; --text-muted: #484f58;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text-primary); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  .prose h1,.prose h2,.prose h3 { color:var(--text-primary); font-weight:600; margin:1em 0 0.4em; }
+  .prose h1 { font-size:1.05rem; } .prose h2 { font-size:0.95rem; } .prose h3 { font-size:0.875rem; color:var(--text-secondary); }
+  .prose p { margin:0.5em 0; line-height:1.65; } .prose ul,.prose ol { padding-left:1.25em; margin:0.5em 0; }
+  .prose li { margin:0.25em 0; } .prose strong { color:var(--text-primary); font-weight:600; }
+  .prose code { background:var(--surface-elevated); padding:0.1em 0.3em; border-radius:3px; font-size:0.85em; color:#79c0ff; }
+  #chat-msg { margin-top:8px; } .chat-q { margin-top:16px; }
+  .chat-q-label { font-size:11px; font-weight:600; color:var(--text-muted); margin-bottom:4px; }
+  .chat-q-bubble { background:var(--surface-elevated); padding:10px 14px; border-radius:12px; font-size:14px; color:var(--text-primary); }
+  .chat-a-label { font-size:11px; font-weight:600; color:#58a6ff; margin-bottom:4px; margin-top:16px; }
+  .chat-a-body { font-size:14px; color:var(--text-secondary); line-height:1.6; }
+</style>
+</head>
+<body>
+
+<!-- Fixed header -->
+<div style="position:fixed;top:0;left:0;right:0;z-index:50;background:var(--surface);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:14px">
+  <a href="/" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:var(--surface-elevated);color:var(--text-primary);text-decoration:none;font-size:18px;flex-shrink:0">&#8592;</a>
+  <div style="min-width:0">
+    <div style="font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">404—GEN</div>
+    <div style="font-size:11px;color:var(--text-muted)">SN17 · AI Models &amp; Training</div>
+  </div>
+  <div style="margin-left:auto;flex-shrink:0;text-align:right"><div style="font-size:14px;font-weight:700;color:#f85149">3.5/10</div><div style="font-size:10px;color:var(--text-muted)">Early stage</div></div>
+</div>
+
+<!-- Scrollable content -->
+<div style="padding: 72px 16px 100px 16px; max-width: 680px; margin: 0 auto;">
+
+  <div style="margin-bottom:16px"><div style="height:4px;border-radius:2px;background:var(--border);overflow:hidden"><div style="width:35%;height:100%;background:#f85149"></div></div><div style="font-size:12px;color:var(--text-muted);margin-top:6px">Early stage · Text-to-3D generation via Three.js modules judged by VLM pairwise duels is a narrow vertical adjacent to AI models, with</div></div>
+
+  
+
+  <div id="summary-text" style="font-size:15px;line-height:1.65;color:var(--text-secondary);margin-bottom:8px">Subnet 17 (404—GEN) rewards miners for producing the best AI-generated 3D models (Three.js JavaScript modules) from text/image prompts. Validators run a &quot;winner-stays-in&quot; competition where a vision-language model judges miner outputs in pairwise duels, and winners must pass a verification step where their Docker image is re-run on a 4×H200 pod to confirm the outputs are reproducible. Only the round winner earns the emissions, with a weight decay applied if the same miner keeps defending.</div>
+
+  <button id="expand-btn" onclick="toggleFull()" style="font-size:13px;color:var(--text-muted);background:none;border:none;cursor:pointer;padding:4px 0;margin-bottom:16px">Read full analysis ↓</button>
+  <div id="full-text" style="display:none;font-size:14px;line-height:1.65;color:var(--text-secondary);margin-bottom:16px" class="prose"></div>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px"><a href="https://github.com/404-Repo/404-gen-subnet" target="_blank" style="display:inline-flex;align-items:center;padding:8px 16px;border-radius:10px;border:1px solid var(--border);font-size:13px;font-weight:500;color:#58a6ff;text-decoration:none;background:var(--surface-elevated)">GitHub ↗</a><a href="https://www.404.xyz" target="_blank" style="display:inline-flex;align-items:center;padding:8px 16px;border-radius:10px;border:1px solid var(--border);font-size:13px;font-weight:500;color:#58a6ff;text-decoration:none;background:var(--surface-elevated)">Website ↗</a><button onclick="loadEmissions()" style="display:inline-flex;align-items:center;padding:8px 16px;border-radius:10px;border:1px solid var(--border);font-size:13px;font-weight:500;color:#58a6ff;text-decoration:none;background:var(--surface-elevated);cursor:pointer;border:1px solid var(--border)">Emissions ↗</button></div>
+  <div id="emissions-section" style="display:none;margin-top:4px;margin-bottom:16px;padding:14px;border-radius:12px;background:var(--surface-elevated);border:1px solid var(--border)"></div>
+  <div style="margin-top:16px;padding:12px 14px;border-radius:10px;background:var(--surface-elevated);font-size:13px"><span style="color:var(--text-muted)">Market: </span><span style="color:#d29922;font-weight:600">$132B</span><div style="color:var(--text-muted);margin-top:4px;font-size:12px">Stability AI, Luma AI, Roblox, Adobe Substance 3D</div></div>
+  <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)"><div style="font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:0.05em;margin-bottom:10px">FROM THEIR SITE<span style="font-weight:400;margin-left:8px">2026-05-23</span></div><div style="font-size:13px;line-height:1.6;color:var(--text-secondary)"><div style="margin-bottom:8px">- **Positioning**: 404—GEN (SN17) is a 3D AI generator focused on democratizing 3D content creation from text prompts, targeting immersive 3D worlds, games, and AR/VR/XR experiences.</div>
+<div style="margin-bottom:8px">- **Product surface**: The site advertises four product entry points — CATALOG, APP, PLUGIN, and ABOUT — plus an &quot;EXP-001&quot; label, suggesting a consumer-facing app, a plugin integration, and a browsable catalog of generated assets.</div>
+<div style="margin-bottom:8px">- **Traction signal**: A &quot;038/100&quot; indicator is displayed prominently, but the site does not explain what it measures (progress, score, version, etc.), so its meaning cannot be confirmed.</div>
+<div style="margin-bottom:8px">- **Not disclosed on site**: No information about miner onboarding, hardware/stake requirements, roadmap milestones, team, founders, investors, partnerships, user counts, or usage metrics is present in the provided content.</div></div></div>
+
+  <div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--border)">
+    <div id="chat-msg"></div>
+    <div id="ask-loading" style="display:none;font-size:13px;color:var(--text-muted);padding:8px 0">Fetching live validator code...</div>
+  </div>
+
+</div>
+
+<!-- Fixed bottom input -->
+<div style="position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:12px 16px;padding-bottom:max(16px,env(safe-area-inset-bottom))">
+  <div style="display:flex;gap:10px;max-width:680px;margin:0 auto">
+    <input id="ask-input" type="text" placeholder="Ask disabled in static snapshot"
+      style="flex:1;background:var(--surface-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 16px;font-size:16px;color:var(--text-primary);outline:none"
+      onkeydown="if(event.key==='Enter')ask()">
+    <button onclick="ask()" style="background:#58a6ff22;border:1px solid #58a6ff55;color:#58a6ff;border-radius:12px;padding:12px 20px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap">Ask</button>
+  </div>
+</div>
+
+<script>
+const netuid = 17;
+let chatHistory = [];
+let fullText = '';
+
+window.addEventListener('DOMContentLoaded', () => {
+  const raw = `**1. What miners do**
+Miners submit open-source 3D generation solutions packaged as Docker images. Each round, validators publish a random seed and a set of prompts (~128 prompts in 4 batches of 32); miners generate 3D models as Three.js JavaScript modules, upload them to their own CDN, and register the submission on-chain. The submissions are downloaded by the \`submission-collector\` and rendered to multi-view PNGs via headless Chromium with WebGL.
+
+**2. Reward function / scoring**
+This is *not* a continuous per-miner score function — it\'s a **tournament**:
+- **VLM-judged pairwise duels** (\`judge-service\`): A vision-language model (GLM-4.6V-Flash) compares miners\' rendered outputs head-to-head per prompt. Margin values are recorded in \`matches_matrix.csv\`.
+- **Verification audit** (\`generation-orchestrator\`): The candidate winner\'s Docker image is deployed on a 4×H200 serverless GPU pod and re-runs the same prompts with the same seed. Regenerated outputs are compared to the original submission using **DINOv3 perceptual embeddings** (\`image-distance-service\`) plus another VLM judging pass. Only if the regenerated outputs match the submission quality does the miner pass.
+- **Leader weights** (\`leader.json\`): A new winner starts at weight 1.0. If the same miner defends successfully across rounds, their weight **decays toward a floor**, encouraging fresh contenders.
+
+**3. Behaviors that maximize emissions**
+- Producing visually superior 3D models that beat peers in VLM duels.
+- Ensuring outputs are **reproducible from seed** — verification re-runs the miner\'s image, so non-deterministic or cherry-picked submissions fail.
+- Pod must pass a **GPU benchmark** at warmup (FP32 ≥ 30 TFLOPS, VRAM ≥ 134 GB per GPU) — degraded hardware triggers replacement.
+- Outputs must comply with the static-analysis / sandbox-execution rules for the JS module (see \`runtime_specifications.md\` / \`output_specifications.md\`).
+- Becoming a new leader earns full weight 1.0 vs. a decayed weight for a defending leader.
+
+**4. Penalties / disqualification**
+There\'s no continuous slashing; instead, miners are **outright excluded** from the round\'s reward if:
+- They lose pairwise duels (only the winner is rewarded per round).
+- Verification fails — the regenerated outputs don\'t match the submission, the Docker build fails, or the pod can\'t be deployed → outcome is \`REJECTED\`, the timeline is discarded, and the next-best candidate is evaluated.
+- Submissions are malformed (stem must match \`^[a-z0-9]+$\`), fail static analysis, or can\'t be rendered.
+- GPU pod is degraded and no replacements remain.
+- The miner doesn\'t submit within the generation deadline in \`schedule.json\`.
+
+In short: **emissions are winner-take-all per round, gated by reproducibility verification, with leader-weight decay to prevent permanent dominance.**`;
+  fullText = raw;
+  const full = document.getElementById('full-text');
+  full.innerHTML = (typeof marked !== 'undefined') ? marked.parse(raw) : raw;
+});
+
+function toggleFull() {
+  const full = document.getElementById('full-text');
+  const btn = document.getElementById('expand-btn');
+  if (full.style.display === 'none') {
+    full.style.display = 'block';
+    btn.textContent = 'Hide full analysis ↑';
+  } else {
+    full.style.display = 'none';
+    btn.textContent = 'Read full analysis ↓';
+  }
+}
+
+function addMessage(role, text) {
+  const container = document.getElementById('chat-msg');
+  const div = document.createElement('div');
+  div.className = 'chat-q';
+  if (role === 'user') {
+    div.innerHTML = '<div class="chat-q-label">You</div><div class="chat-q-bubble">' + text.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>';
+  } else {
+    const parsed = (typeof marked !== 'undefined') ? marked.parse(text) : text;
+    div.innerHTML = '<div class="chat-a-label">Claude</div><div class="chat-a-body prose">' + parsed + '</div>';
+  }
+  container.appendChild(div);
+  div.scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+
+function ask() {
+  const input = document.getElementById('ask-input');
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+  addMessage('user', q);
+  chatHistory.push({role: 'user', content: q});
+  document.getElementById('ask-loading').style.display = 'block';
+  fetch('/api/subnets/' + netuid + '/ask', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({question: q, history: chatHistory.slice(0,-1)})
+  })
+  .then(r => r.json())
+  .then(resp => {
+    document.getElementById('ask-loading').style.display = 'none';
+    const answer = resp.answer || 'No response.';
+    chatHistory.push({role: 'assistant', content: answer});
+    addMessage('assistant', answer);
+  })
+  .catch(() => {
+    document.getElementById('ask-loading').style.display = 'none';
+    addMessage('assistant', 'Failed — try again.');
+  });
+}
+
+function loadEmissions() {
+  const el = document.getElementById('emissions-section');
+  if (el.dataset.loaded === '1') {
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    return;
+  }
+  el.dataset.loaded = '1';
+  el.style.display = 'block';
+  el.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:12px 0">Loading emissions...</div>';
+  fetch('/api/subnets/17/emissions')
+    .then(r => r.json())
+    .then(resp => {
+      const data = resp.rows || [];
+      const rob = resp.recycle_or_burn || 'Burn';
+      if (!data.length) { el.innerHTML = '<div style="color:var(--text-muted);font-size:13px">No emission data yet.</div>'; return; }
+      const robColor = rob === 'Recycle' ? '#d29922' : '#f85149';
+      const robLow = rob.toLowerCase();
+      let html = '<div style="font-size:11px;color:var(--text-muted);margin-bottom:12px">Mode: <span style="color:' + robColor + ';font-weight:600">' + rob + '</span> &middot; <span style="color:#f85149">Red = owner key (' + robLow + 'd)</span> &middot; <span style="color:#f97316">Orange = owner miner (also ' + robLow + 'd)</span></div>';
+      const ownerRows = data.filter(d => d.is_owner || d.is_primary_owner);
+      if (ownerRows.length > 1) {
+        const ownerPct = ownerRows.reduce((s, d) => s + d.share_pct, 0);
+        const ownerList = ownerRows.map(d => 'UID ' + d.uid).join(', ');
+        html += '<div style="background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.3);border-radius:6px;padding:8px 10px;margin-bottom:10px;font-size:11px;color:#f97316;line-height:1.6">' +
+          '<strong>Same operator controls ' + ownerRows.length + ' UIDs:</strong> ' + ownerList + '<br>' +
+          '<span style="color:#9ca3af">Combined: <strong style="color:#f97316">' + ownerPct.toFixed(1) + '%</strong> of miner emissions — all ' + robLow + 'd</span>' +
+        '</div>';
+      }
+      html += '<div style="space-y:4px">';
+      const max = Math.max(...data.map(d => d.share_pct));
+      data.slice(0, 30).forEach(d => {
+        const pct = d.share_pct || 0;
+        const barW = max > 0 ? Math.round((pct / max) * 100) : 0;
+        const color = d.is_primary_owner ? '#ef4444' : d.is_owner ? '#f97316' : '#3b82f6';
+        const label = d.is_primary_owner ? ' (owner key)' : d.is_owner ? ' (owner miner)' : '';
+        html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">' +
+          '<div style="font-size:11px;color:var(--text-muted);width:50px;flex-shrink:0">UID ' + d.uid + '</div>' +
+          '<div style="flex:1;height:8px;border-radius:4px;background:var(--border);overflow:hidden">' +
+            '<div style="width:' + barW + '%;height:100%;background:' + color + ';border-radius:4px"></div>' +
+          '</div>' +
+          '<div style="font-size:11px;font-family:monospace;width:52px;text-align:right;flex-shrink:0;color:var(--text-secondary)">' + pct.toFixed(2) + '%</div>' +
+          '<div style="font-size:10px;color:var(--text-muted)">' + label + '</div>' +
+          '</div>';
+      });
+      if (data.length > 30) html += '<div style="font-size:11px;color:var(--text-muted)">' + (data.length - 30) + ' more miners...</div>';
+      html += '</div>';
+      el.innerHTML = html;
+    })
+    .catch(() => { el.innerHTML = '<div style="color:#f85149;font-size:13px">Failed to load.</div>'; });
+}
+</script>
+</body>
+</html>

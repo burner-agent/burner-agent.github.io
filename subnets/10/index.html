@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Swap — Subnet Intel</title>
+<script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
+<style>
+  :root {
+    --bg: #0d1117; --surface: #161b22; --surface-elevated: #21262d;
+    --border: #30363d; --text-primary: #e6edf3; --text-secondary: #8b949e; --text-muted: #484f58;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text-primary); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  .prose h1,.prose h2,.prose h3 { color:var(--text-primary); font-weight:600; margin:1em 0 0.4em; }
+  .prose h1 { font-size:1.05rem; } .prose h2 { font-size:0.95rem; } .prose h3 { font-size:0.875rem; color:var(--text-secondary); }
+  .prose p { margin:0.5em 0; line-height:1.65; } .prose ul,.prose ol { padding-left:1.25em; margin:0.5em 0; }
+  .prose li { margin:0.25em 0; } .prose strong { color:var(--text-primary); font-weight:600; }
+  .prose code { background:var(--surface-elevated); padding:0.1em 0.3em; border-radius:3px; font-size:0.85em; color:#79c0ff; }
+  #chat-msg { margin-top:8px; } .chat-q { margin-top:16px; }
+  .chat-q-label { font-size:11px; font-weight:600; color:var(--text-muted); margin-bottom:4px; }
+  .chat-q-bubble { background:var(--surface-elevated); padding:10px 14px; border-radius:12px; font-size:14px; color:var(--text-primary); }
+  .chat-a-label { font-size:11px; font-weight:600; color:#58a6ff; margin-bottom:4px; margin-top:16px; }
+  .chat-a-body { font-size:14px; color:var(--text-secondary); line-height:1.6; }
+</style>
+</head>
+<body>
+
+<!-- Fixed header -->
+<div style="position:fixed;top:0;left:0;right:0;z-index:50;background:var(--surface);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:14px">
+  <a href="/" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:var(--surface-elevated);color:var(--text-primary);text-decoration:none;font-size:18px;flex-shrink:0">&#8592;</a>
+  <div style="min-width:0">
+    <div style="font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Swap</div>
+    <div style="font-size:11px;color:var(--text-muted)">SN10 · DeFi &amp; Liquidity</div>
+  </div>
+  <div style="margin-left:auto;flex-shrink:0;text-align:right"><div style="font-size:14px;font-weight:700;color:#f85149">4.5/10</div><div style="font-size:10px;color:var(--text-muted)">Early stage</div></div>
+</div>
+
+<!-- Scrollable content -->
+<div style="padding: 72px 16px 100px 16px; max-width: 680px; margin: 0 auto;">
+
+  <div style="margin-bottom:16px"><div style="height:4px;border-radius:2px;background:var(--border);overflow:hidden"><div style="width:45%;height:100%;background:#f85149"></div></div><div style="font-size:12px;color:var(--text-muted);margin-top:6px">Early stage · Simple concentration score from fee earnings on a single TAO/USDC Uniswap V3 pool — functional but narrow and trivially </div></div>
+
+  
+
+  <div id="summary-text" style="font-size:15px;line-height:1.65;color:var(--text-secondary);margin-bottom:8px">Swap (SN10) rewards miners for providing liquidity to the TAO↔USDC pool on TaoFi (a Uniswap V3 pool on Bittensor&#x27;s EVM). Miners are scored by a &quot;concentration score&quot; derived from their LP positions&#x27; fee earnings over the past ~24 hours, fetched from the TaoFi subgraph. Top performers earn emissions; miners beyond a rank threshold are zeroed out.</div>
+
+  <button id="expand-btn" onclick="toggleFull()" style="font-size:13px;color:var(--text-muted);background:none;border:none;cursor:pointer;padding:4px 0;margin-bottom:16px">Read full analysis ↓</button>
+  <div id="full-text" style="display:none;font-size:14px;line-height:1.65;color:var(--text-secondary);margin-bottom:16px" class="prose"></div>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px"><a href="https://github.com/Swap-Subnet/swap-subnet" target="_blank" style="display:inline-flex;align-items:center;padding:8px 16px;border-radius:10px;border:1px solid var(--border);font-size:13px;font-weight:500;color:#58a6ff;text-decoration:none;background:var(--surface-elevated)">GitHub ↗</a><a href="https://www.taofi.com/pool" target="_blank" style="display:inline-flex;align-items:center;padding:8px 16px;border-radius:10px;border:1px solid var(--border);font-size:13px;font-weight:500;color:#58a6ff;text-decoration:none;background:var(--surface-elevated)">Website ↗</a><button onclick="loadEmissions()" style="display:inline-flex;align-items:center;padding:8px 16px;border-radius:10px;border:1px solid var(--border);font-size:13px;font-weight:500;color:#58a6ff;text-decoration:none;background:var(--surface-elevated);cursor:pointer;border:1px solid var(--border)">Emissions ↗</button></div>
+  <div id="emissions-section" style="display:none;margin-top:4px;margin-bottom:16px;padding:14px;border-radius:12px;background:var(--surface-elevated);border:1px solid var(--border)"></div>
+  <div style="margin-top:16px;padding:12px 14px;border-radius:10px;background:var(--surface-elevated);font-size:13px"><span style="color:var(--text-muted)">Market: </span><span style="color:#d29922;font-weight:600">$6B</span><div style="color:var(--text-muted);margin-top:4px;font-size:12px">Uniswap Protocol, Curve Finance, Aave</div></div>
+  <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)"><div style="font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:0.05em;margin-bottom:10px">FROM THEIR SITE<span style="font-weight:400;margin-left:8px">2026-05-23</span></div><div style="font-size:13px;line-height:1.6;color:var(--text-secondary)"><div style="margin-bottom:8px">- **Acquisition / wind-down:** TaoFi has been acquired by Astrid, with the new UI at astrid.taofi.com. Existing lending, borrowing, and crosschain subnet positions should be closed immediately — contracts remain onchain but support ends **February 28, 2026**.</div>
+<div style="margin-bottom:8px">- **Product surface:** The page is a Uniswap-style concentrated-liquidity AMM for a single **TAO/USDC** pool, with preset price ranges (±5%, ±10%, ±25%, ±50%, Full Range) and a custom-range option. Positioning is as TAO&#x27;s on-subnet DEX/liquidity venue (&quot;Swap&quot; — SN10).</div>
+<div style="margin-bottom:8px">- **Current price &amp; liquidity:** 1 TAO = **265.04 USDC**. Pool token balances: **539.21 TAO** and **65.40K USDC**. Headline **TVL displays as $0.00** (likely a UI bug or migration artifact given the non-zero token balances).</div>
+<div style="margin-bottom:8px">- **Traction (24H):** Volume **$72.74K**, fees **$218.22**. APR and rewards fields are empty/unpopulated. No user, miner, or LP counts disclosed.</div>
+<div style="margin-bottom:8px">- **Miner onboarding / roadmap / team:** Nothing on this page. No miner requirements, registration guide, roadmap, founders, investors, or advisors are mentioned — the page is purely the LP interface plus the acquisition notice.</div>
+<div style="margin-bottom:8px">- **Notable signal:** The acquisition by Astrid is the dominant story; active development and user attention are being redirected off this URL, so any deeper intel likely lives at astrid.taofi.com rather than here.</div></div></div>
+
+  <div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--border)">
+    <div id="chat-msg"></div>
+    <div id="ask-loading" style="display:none;font-size:13px;color:var(--text-muted);padding:8px 0">Fetching live validator code...</div>
+  </div>
+
+</div>
+
+<!-- Fixed bottom input -->
+<div style="position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:12px 16px;padding-bottom:max(16px,env(safe-area-inset-bottom))">
+  <div style="display:flex;gap:10px;max-width:680px;margin:0 auto">
+    <input id="ask-input" type="text" placeholder="Ask disabled in static snapshot"
+      style="flex:1;background:var(--surface-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 16px;font-size:16px;color:var(--text-primary);outline:none"
+      onkeydown="if(event.key==='Enter')ask()">
+    <button onclick="ask()" style="background:#58a6ff22;border:1px solid #58a6ff55;color:#58a6ff;border-radius:12px;padding:12px 20px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap">Ask</button>
+  </div>
+</div>
+
+<script>
+const netuid = 10;
+let chatHistory = [];
+let fullText = '';
+
+window.addEventListener('DOMContentLoaded', () => {
+  const raw = `**1. Miner task**
+Miners run Uniswap V3 liquidity provider (LP) positions on TaoFi\'s TAO/USDC pool. They register an associated EVM address with the subnet (\`associated_evm_addresses\`), then deposit liquidity into the pool via NFT positions. The validator does not query miners over the Bittensor protocol for this work — it reads each miner\'s on-chain positions and their performance from the TaoFi subgraph.
+
+**2. Reward function**
+For each scoring round (\`run_uniswap_v3_lp_loop\`, gated by \`UNISWAP_V3_LP_QUERY_FREQUENCY\`):
+- The validator calls \`get_positions_with_scores(block_number=current_block - BLOCK_BUFFER)\` against the TaoFi subgraph, which returns each \`token_id\`\'s \`PositionInfo\` including a precomputed \`reward_score\` (a concentration/fee-weighted score over a ~24h window — \`BLOCK_ONE_DAY_AGO\` is referenced as the lookback).
+- Positions are grouped by owner EVM address. For each non-whitelisted miner UID, \`calculate_miner_score\` sums the \`reward_score\` of all positions owned by that miner\'s EVM address.
+- A special \`WHITELISTED_LP_MINER\` hotkey is awarded the sum of all *unclaimed* positions (positions whose owner doesn\'t map to any registered miner) — effectively a catch-all bucket.
+- Rewards are normalized by dividing by the max score (so the top miner = 1.0), then ranked.
+- Miners ranked below \`MINER_GROUP_THRESHOLDS[&quot;UNISWAP_V3_LP&quot;]\` are zeroed out.
+- The normalized rewards are multiplied by \`MINER_GROUP_EMISSIONS[&quot;UNISWAP_V3_LP&quot;]\` and fed into \`update_scores\` with a moving-average alpha (\`lp_moving_average_alpha\`). A \`MINER_EMISSIONS_BURN_PCT\` constant suggests a portion of emissions is burned/redirected to the owner UID.
+
+**3. How to maximize emissions**
+- Provide as much liquidity as possible in tight, in-range ticks around the active TAO/USDC price — the subgraph\'s \`reward_score\` rewards concentration (tighter range = higher score per unit liquidity) and actual fees collected.
+- Keep positions active and in-range continuously over 24h windows; out-of-range positions earn no fees and thus no score.
+- Register your EVM address correctly so the validator can map on-chain positions to your UID.
+- Stay within the top \`MINER_GROUP_THRESHOLDS[&quot;UNISWAP_V3_LP&quot;]\` ranked miners — anything below that gets zero emissions.
+
+**4. Penalties / anti-gaming**
+- **Duplicate-owner protection**: \`claimed_owner_addresses\` ensures a single EVM address can only be claimed by one miner UID — if multiple UIDs register the same address, only the first processed gets credit, the rest get 0.
+- **Duplicate-token protection**: \`claimed_token_ids\` prevents the same LP NFT being counted twice.
+- **Rank cutoff**: miners outside the top-N threshold are explicitly set to 0, not just down-weighted.
+- **No EVM address = no rewards**: miners without an associated EVM address are skipped.
+- No explicit on-chain slashing — penalties are emissions-based (zeroing), and the moving average means recovery from a bad period takes time.`;
+  fullText = raw;
+  const full = document.getElementById('full-text');
+  full.innerHTML = (typeof marked !== 'undefined') ? marked.parse(raw) : raw;
+});
+
+function toggleFull() {
+  const full = document.getElementById('full-text');
+  const btn = document.getElementById('expand-btn');
+  if (full.style.display === 'none') {
+    full.style.display = 'block';
+    btn.textContent = 'Hide full analysis ↑';
+  } else {
+    full.style.display = 'none';
+    btn.textContent = 'Read full analysis ↓';
+  }
+}
+
+function addMessage(role, text) {
+  const container = document.getElementById('chat-msg');
+  const div = document.createElement('div');
+  div.className = 'chat-q';
+  if (role === 'user') {
+    div.innerHTML = '<div class="chat-q-label">You</div><div class="chat-q-bubble">' + text.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>';
+  } else {
+    const parsed = (typeof marked !== 'undefined') ? marked.parse(text) : text;
+    div.innerHTML = '<div class="chat-a-label">Claude</div><div class="chat-a-body prose">' + parsed + '</div>';
+  }
+  container.appendChild(div);
+  div.scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+
+function ask() {
+  const input = document.getElementById('ask-input');
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+  addMessage('user', q);
+  chatHistory.push({role: 'user', content: q});
+  document.getElementById('ask-loading').style.display = 'block';
+  fetch('/api/subnets/' + netuid + '/ask', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({question: q, history: chatHistory.slice(0,-1)})
+  })
+  .then(r => r.json())
+  .then(resp => {
+    document.getElementById('ask-loading').style.display = 'none';
+    const answer = resp.answer || 'No response.';
+    chatHistory.push({role: 'assistant', content: answer});
+    addMessage('assistant', answer);
+  })
+  .catch(() => {
+    document.getElementById('ask-loading').style.display = 'none';
+    addMessage('assistant', 'Failed — try again.');
+  });
+}
+
+function loadEmissions() {
+  const el = document.getElementById('emissions-section');
+  if (el.dataset.loaded === '1') {
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    return;
+  }
+  el.dataset.loaded = '1';
+  el.style.display = 'block';
+  el.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:12px 0">Loading emissions...</div>';
+  fetch('/api/subnets/10/emissions')
+    .then(r => r.json())
+    .then(resp => {
+      const data = resp.rows || [];
+      const rob = resp.recycle_or_burn || 'Burn';
+      if (!data.length) { el.innerHTML = '<div style="color:var(--text-muted);font-size:13px">No emission data yet.</div>'; return; }
+      const robColor = rob === 'Recycle' ? '#d29922' : '#f85149';
+      const robLow = rob.toLowerCase();
+      let html = '<div style="font-size:11px;color:var(--text-muted);margin-bottom:12px">Mode: <span style="color:' + robColor + ';font-weight:600">' + rob + '</span> &middot; <span style="color:#f85149">Red = owner key (' + robLow + 'd)</span> &middot; <span style="color:#f97316">Orange = owner miner (also ' + robLow + 'd)</span></div>';
+      const ownerRows = data.filter(d => d.is_owner || d.is_primary_owner);
+      if (ownerRows.length > 1) {
+        const ownerPct = ownerRows.reduce((s, d) => s + d.share_pct, 0);
+        const ownerList = ownerRows.map(d => 'UID ' + d.uid).join(', ');
+        html += '<div style="background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.3);border-radius:6px;padding:8px 10px;margin-bottom:10px;font-size:11px;color:#f97316;line-height:1.6">' +
+          '<strong>Same operator controls ' + ownerRows.length + ' UIDs:</strong> ' + ownerList + '<br>' +
+          '<span style="color:#9ca3af">Combined: <strong style="color:#f97316">' + ownerPct.toFixed(1) + '%</strong> of miner emissions — all ' + robLow + 'd</span>' +
+        '</div>';
+      }
+      html += '<div style="space-y:4px">';
+      const max = Math.max(...data.map(d => d.share_pct));
+      data.slice(0, 30).forEach(d => {
+        const pct = d.share_pct || 0;
+        const barW = max > 0 ? Math.round((pct / max) * 100) : 0;
+        const color = d.is_primary_owner ? '#ef4444' : d.is_owner ? '#f97316' : '#3b82f6';
+        const label = d.is_primary_owner ? ' (owner key)' : d.is_owner ? ' (owner miner)' : '';
+        html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">' +
+          '<div style="font-size:11px;color:var(--text-muted);width:50px;flex-shrink:0">UID ' + d.uid + '</div>' +
+          '<div style="flex:1;height:8px;border-radius:4px;background:var(--border);overflow:hidden">' +
+            '<div style="width:' + barW + '%;height:100%;background:' + color + ';border-radius:4px"></div>' +
+          '</div>' +
+          '<div style="font-size:11px;font-family:monospace;width:52px;text-align:right;flex-shrink:0;color:var(--text-secondary)">' + pct.toFixed(2) + '%</div>' +
+          '<div style="font-size:10px;color:var(--text-muted)">' + label + '</div>' +
+          '</div>';
+      });
+      if (data.length > 30) html += '<div style="font-size:11px;color:var(--text-muted)">' + (data.length - 30) + ' more miners...</div>';
+      html += '</div>';
+      el.innerHTML = html;
+    })
+    .catch(() => { el.innerHTML = '<div style="color:#f85149;font-size:13px">Failed to load.</div>'; });
+}
+</script>
+</body>
+</html>

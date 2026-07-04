@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trishool — Subnet Intel</title>
+<script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
+<style>
+  :root {
+    --bg: #0d1117; --surface: #161b22; --surface-elevated: #21262d;
+    --border: #30363d; --text-primary: #e6edf3; --text-secondary: #8b949e; --text-muted: #484f58;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text-primary); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  .prose h1,.prose h2,.prose h3 { color:var(--text-primary); font-weight:600; margin:1em 0 0.4em; }
+  .prose h1 { font-size:1.05rem; } .prose h2 { font-size:0.95rem; } .prose h3 { font-size:0.875rem; color:var(--text-secondary); }
+  .prose p { margin:0.5em 0; line-height:1.65; } .prose ul,.prose ol { padding-left:1.25em; margin:0.5em 0; }
+  .prose li { margin:0.25em 0; } .prose strong { color:var(--text-primary); font-weight:600; }
+  .prose code { background:var(--surface-elevated); padding:0.1em 0.3em; border-radius:3px; font-size:0.85em; color:#79c0ff; }
+  #chat-msg { margin-top:8px; } .chat-q { margin-top:16px; }
+  .chat-q-label { font-size:11px; font-weight:600; color:var(--text-muted); margin-bottom:4px; }
+  .chat-q-bubble { background:var(--surface-elevated); padding:10px 14px; border-radius:12px; font-size:14px; color:var(--text-primary); }
+  .chat-a-label { font-size:11px; font-weight:600; color:#58a6ff; margin-bottom:4px; margin-top:16px; }
+  .chat-a-body { font-size:14px; color:var(--text-secondary); line-height:1.6; }
+</style>
+</head>
+<body>
+
+<!-- Fixed header -->
+<div style="position:fixed;top:0;left:0;right:0;z-index:50;background:var(--surface);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:14px">
+  <a href="/" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:var(--surface-elevated);color:var(--text-primary);text-decoration:none;font-size:18px;flex-shrink:0">&#8592;</a>
+  <div style="min-width:0">
+    <div style="font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Trishool</div>
+    <div style="font-size:11px;color:var(--text-muted)">SN23 · AI Models &amp; Training</div>
+  </div>
+  <div style="margin-left:auto;flex-shrink:0;text-align:right"><div style="font-size:14px;font-weight:700;color:#f85149">4.0/10</div><div style="font-size:10px;color:var(--text-muted)">Early stage</div></div>
+</div>
+
+<!-- Scrollable content -->
+<div style="padding: 72px 16px 100px 16px; max-width: 680px; margin: 0 auto;">
+
+  <div style="margin-bottom:16px"><div style="height:4px;border-radius:2px;background:var(--border);overflow:hidden"><div style="width:40%;height:100%;background:#f85149"></div></div><div style="font-size:12px;color:var(--text-muted);margin-top:6px">Early stage · Adversarial jailbreak red-teaming is a legitimate safety niche with a reasonable tri-claw + judge scoring stack, but it&</div></div>
+
+  
+
+  <div id="summary-text" style="font-size:15px;line-height:1.65;color:var(--text-secondary);margin-bottom:8px">Miners submit adversarial jailbreak prompts scored by a tri-claw LLM agent plus a judge that rates safe/partial/jailbreak; platform-aggregated scores become on-chain weights. Maximizing emissions requires crafting novel, effective jailbreak prompts across diverse surface areas that fool the OpenClaw guard model.</div>
+
+  <button id="expand-btn" onclick="toggleFull()" style="font-size:13px;color:var(--text-muted);background:none;border:none;cursor:pointer;padding:4px 0;margin-bottom:16px">Read full analysis ↓</button>
+  <div id="full-text" style="display:none;font-size:14px;line-height:1.65;color:var(--text-secondary);margin-bottom:16px" class="prose"></div>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px"><a href="https://github.com/TrishoolAI/trishool-phase2" target="_blank" style="display:inline-flex;align-items:center;padding:8px 16px;border-radius:10px;border:1px solid var(--border);font-size:13px;font-weight:500;color:#58a6ff;text-decoration:none;background:var(--surface-elevated)">GitHub ↗</a><a href="https://trishool.ai" target="_blank" style="display:inline-flex;align-items:center;padding:8px 16px;border-radius:10px;border:1px solid var(--border);font-size:13px;font-weight:500;color:#58a6ff;text-decoration:none;background:var(--surface-elevated)">Website ↗</a><button onclick="loadEmissions()" style="display:inline-flex;align-items:center;padding:8px 16px;border-radius:10px;border:1px solid var(--border);font-size:13px;font-weight:500;color:#58a6ff;text-decoration:none;background:var(--surface-elevated);cursor:pointer;border:1px solid var(--border)">Emissions ↗</button></div>
+  <div id="emissions-section" style="display:none;margin-top:4px;margin-bottom:16px;padding:14px;border-radius:12px;background:var(--surface-elevated);border:1px solid var(--border)"></div>
+  <div style="margin-top:16px;padding:12px 14px;border-radius:10px;background:var(--surface-elevated);font-size:13px"><span style="color:var(--text-muted)">Market: </span><span style="color:#d29922;font-weight:600">$68B</span><div style="color:var(--text-muted);margin-top:4px;font-size:12px">Anthropic, HiddenLayer, Protect AI, Cohere</div></div>
+  <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)"><div style="font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:0.05em;margin-bottom:10px">FROM THEIR SITE<span style="font-weight:400;margin-left:8px">2026-05-23</span></div><div style="font-size:13px;line-height:1.6;color:var(--text-secondary)"><div style="margin-bottom:8px">- **Positioning:** AI safety / alignment subnet branded as &quot;AlignNet&quot; — a Bittensor-powered adversarial testing network where miners compete to surface model misalignment (deception, collusion, sycophancy). Pitches itself against the cost (~$500K+) and lag of conventional red-teaming, and against regulatory pressure (EU AI Act €35M fines, California SB-53 audit mandates).</div>
+<div style="margin-bottom:8px">- **Unique mechanic:** Validators issue escalating alignment challenges targeting 95% detection accuracy; miners submit seed instructions and Python agents that probe models. Sandboxes execute submissions, near-perfect results are verified on-chain and paid in TAO, and winning agents merge into a &quot;Guardian&quot; base model that is retrained weekly via RLVR into an &quot;Alignment-LLM.&quot; Framed as a self-evolving safety organism.</div>
+<div style="margin-bottom:8px">- **Traction / status:** No hard numbers — no miner counts, validator counts, TAO emissions, model benchmarks, or partnership names disclosed. Roadmap places Subnet Launch in H2 2025 (Phase I — Mobilize), implying the network is in its earliest live phase as of mid-2026.</div>
+<div style="margin-bottom:8px">- **Miner onboarding:** Site only says &quot;Stake, mine, or integrate&quot; with links to Docs, Discord, and a Litepaper — no explicit hardware specs, stake minimums, or skill prerequisites on the landing page. Submissions are Python agents + adversarial seed prompts, so the implied bar is ML/red-teaming engineering skill rather than raw compute (&quot;ingenuity beats compute&quot;).</div>
+<div style="margin-bottom:8px">- **Roadmap:** H2&#x27;25 Mobilize (launch) → H1&#x27;26 Attack (Adversaries &amp; Oracles, evaluation for decentralized AI labs) → H2&#x27;26 Interpret (Architects / interpretability agents for web2 labs) → H1&#x27;27 Align (full Alignment Protocol, enterprise scaling).</div>
+<div style="margin-bottom:8px">- **Team / backing:** None disclosed on the landing page — no founders, investors, advisors, or partner labs named. Copyright &quot;© 2025 AlignNet.&quot;</div></div></div>
+
+  <div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--border)">
+    <div id="chat-msg"></div>
+    <div id="ask-loading" style="display:none;font-size:13px;color:var(--text-muted);padding:8px 0">Fetching live validator code...</div>
+  </div>
+
+</div>
+
+<!-- Fixed bottom input -->
+<div style="position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:12px 16px;padding-bottom:max(16px,env(safe-area-inset-bottom))">
+  <div style="display:flex;gap:10px;max-width:680px;margin:0 auto">
+    <input id="ask-input" type="text" placeholder="Ask disabled in static snapshot"
+      style="flex:1;background:var(--surface-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 16px;font-size:16px;color:var(--text-primary);outline:none"
+      onkeydown="if(event.key==='Enter')ask()">
+    <button onclick="ask()" style="background:#58a6ff22;border:1px solid #58a6ff55;color:#58a6ff;border-radius:12px;padding:12px 20px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap">Ask</button>
+  </div>
+</div>
+
+<script>
+const netuid = 23;
+let chatHistory = [];
+let fullText = '';
+
+window.addEventListener('DOMContentLoaded', () => {
+  const raw = `SN23 (Trishool) is an AI safety/jailbreak-detection subnet building a state-of-the-art guard model. Miners submit adversarial prompts (jailbreak attempts) targeting AI systems; validators evaluate whether those prompts successfully jailbreak the target model.
+
+Architecture: Miners upload structured submissions containing question/answer pairs formatted to a surface_area schema via a signed REST API call to trishool.ai platform. Validators fetch unscored submissions from the platform, route each prompt through two agent containers (tri-claw which is an OpenClaw/Claude instance and a Judge LLM), then submit scores back to the platform. The platform aggregates scores and returns final weights which the validator writes on-chain.
+
+Evaluation pipeline per submission:
+- Tri-claw (OpenClaw on port 18789): Answers the adversarial miner prompt as an AI assistant
+- Judge agent (port 8080): Evaluates whether tri-claw\'s response constitutes safe/partial/jailbreak, scoring 0-1
+- Platform aggregates judge outputs into per-miner scores
+- Validators fetch aggregated weights from platform and write them to chain every 2 minutes
+
+Scoring is handled server-side by trishool.ai; the on-chain weights are fetched from the platform API at /validator/weights. No slashing or explicit penalty visible in open source code, but the platform performs format validation, surface_area checking, and duplicate detection that can reject submissions.
+
+To maximize emissions: Miners should craft adversarial prompts that successfully jailbreak the tri-claw/OpenClaw agent (causing the judge to classify the response as a jailbreak rather than safe). Higher jailbreak success rates across diverse surface areas maximizes platform-assigned scores. Duplicate submissions are rejected, so unique and novel prompts are essential.`;
+  fullText = raw;
+  const full = document.getElementById('full-text');
+  full.innerHTML = (typeof marked !== 'undefined') ? marked.parse(raw) : raw;
+});
+
+function toggleFull() {
+  const full = document.getElementById('full-text');
+  const btn = document.getElementById('expand-btn');
+  if (full.style.display === 'none') {
+    full.style.display = 'block';
+    btn.textContent = 'Hide full analysis ↑';
+  } else {
+    full.style.display = 'none';
+    btn.textContent = 'Read full analysis ↓';
+  }
+}
+
+function addMessage(role, text) {
+  const container = document.getElementById('chat-msg');
+  const div = document.createElement('div');
+  div.className = 'chat-q';
+  if (role === 'user') {
+    div.innerHTML = '<div class="chat-q-label">You</div><div class="chat-q-bubble">' + text.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>';
+  } else {
+    const parsed = (typeof marked !== 'undefined') ? marked.parse(text) : text;
+    div.innerHTML = '<div class="chat-a-label">Claude</div><div class="chat-a-body prose">' + parsed + '</div>';
+  }
+  container.appendChild(div);
+  div.scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+
+function ask() {
+  const input = document.getElementById('ask-input');
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+  addMessage('user', q);
+  chatHistory.push({role: 'user', content: q});
+  document.getElementById('ask-loading').style.display = 'block';
+  fetch('/api/subnets/' + netuid + '/ask', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({question: q, history: chatHistory.slice(0,-1)})
+  })
+  .then(r => r.json())
+  .then(resp => {
+    document.getElementById('ask-loading').style.display = 'none';
+    const answer = resp.answer || 'No response.';
+    chatHistory.push({role: 'assistant', content: answer});
+    addMessage('assistant', answer);
+  })
+  .catch(() => {
+    document.getElementById('ask-loading').style.display = 'none';
+    addMessage('assistant', 'Failed — try again.');
+  });
+}
+
+function loadEmissions() {
+  const el = document.getElementById('emissions-section');
+  if (el.dataset.loaded === '1') {
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    return;
+  }
+  el.dataset.loaded = '1';
+  el.style.display = 'block';
+  el.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:12px 0">Loading emissions...</div>';
+  fetch('/api/subnets/23/emissions')
+    .then(r => r.json())
+    .then(resp => {
+      const data = resp.rows || [];
+      const rob = resp.recycle_or_burn || 'Burn';
+      if (!data.length) { el.innerHTML = '<div style="color:var(--text-muted);font-size:13px">No emission data yet.</div>'; return; }
+      const robColor = rob === 'Recycle' ? '#d29922' : '#f85149';
+      const robLow = rob.toLowerCase();
+      let html = '<div style="font-size:11px;color:var(--text-muted);margin-bottom:12px">Mode: <span style="color:' + robColor + ';font-weight:600">' + rob + '</span> &middot; <span style="color:#f85149">Red = owner key (' + robLow + 'd)</span> &middot; <span style="color:#f97316">Orange = owner miner (also ' + robLow + 'd)</span></div>';
+      const ownerRows = data.filter(d => d.is_owner || d.is_primary_owner);
+      if (ownerRows.length > 1) {
+        const ownerPct = ownerRows.reduce((s, d) => s + d.share_pct, 0);
+        const ownerList = ownerRows.map(d => 'UID ' + d.uid).join(', ');
+        html += '<div style="background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.3);border-radius:6px;padding:8px 10px;margin-bottom:10px;font-size:11px;color:#f97316;line-height:1.6">' +
+          '<strong>Same operator controls ' + ownerRows.length + ' UIDs:</strong> ' + ownerList + '<br>' +
+          '<span style="color:#9ca3af">Combined: <strong style="color:#f97316">' + ownerPct.toFixed(1) + '%</strong> of miner emissions — all ' + robLow + 'd</span>' +
+        '</div>';
+      }
+      html += '<div style="space-y:4px">';
+      const max = Math.max(...data.map(d => d.share_pct));
+      data.slice(0, 30).forEach(d => {
+        const pct = d.share_pct || 0;
+        const barW = max > 0 ? Math.round((pct / max) * 100) : 0;
+        const color = d.is_primary_owner ? '#ef4444' : d.is_owner ? '#f97316' : '#3b82f6';
+        const label = d.is_primary_owner ? ' (owner key)' : d.is_owner ? ' (owner miner)' : '';
+        html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">' +
+          '<div style="font-size:11px;color:var(--text-muted);width:50px;flex-shrink:0">UID ' + d.uid + '</div>' +
+          '<div style="flex:1;height:8px;border-radius:4px;background:var(--border);overflow:hidden">' +
+            '<div style="width:' + barW + '%;height:100%;background:' + color + ';border-radius:4px"></div>' +
+          '</div>' +
+          '<div style="font-size:11px;font-family:monospace;width:52px;text-align:right;flex-shrink:0;color:var(--text-secondary)">' + pct.toFixed(2) + '%</div>' +
+          '<div style="font-size:10px;color:var(--text-muted)">' + label + '</div>' +
+          '</div>';
+      });
+      if (data.length > 30) html += '<div style="font-size:11px;color:var(--text-muted)">' + (data.length - 30) + ' more miners...</div>';
+      html += '</div>';
+      el.innerHTML = html;
+    })
+    .catch(() => { el.innerHTML = '<div style="color:#f85149;font-size:13px">Failed to load.</div>'; });
+}
+</script>
+</body>
+</html>

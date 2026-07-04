@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TrajectoryRL — Subnet Intel</title>
+<script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
+<style>
+  :root {
+    --bg: #0d1117; --surface: #161b22; --surface-elevated: #21262d;
+    --border: #30363d; --text-primary: #e6edf3; --text-secondary: #8b949e; --text-muted: #484f58;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text-primary); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  .prose h1,.prose h2,.prose h3 { color:var(--text-primary); font-weight:600; margin:1em 0 0.4em; }
+  .prose h1 { font-size:1.05rem; } .prose h2 { font-size:0.95rem; } .prose h3 { font-size:0.875rem; color:var(--text-secondary); }
+  .prose p { margin:0.5em 0; line-height:1.65; } .prose ul,.prose ol { padding-left:1.25em; margin:0.5em 0; }
+  .prose li { margin:0.25em 0; } .prose strong { color:var(--text-primary); font-weight:600; }
+  .prose code { background:var(--surface-elevated); padding:0.1em 0.3em; border-radius:3px; font-size:0.85em; color:#79c0ff; }
+  #chat-msg { margin-top:8px; } .chat-q { margin-top:16px; }
+  .chat-q-label { font-size:11px; font-weight:600; color:var(--text-muted); margin-bottom:4px; }
+  .chat-q-bubble { background:var(--surface-elevated); padding:10px 14px; border-radius:12px; font-size:14px; color:var(--text-primary); }
+  .chat-a-label { font-size:11px; font-weight:600; color:#58a6ff; margin-bottom:4px; margin-top:16px; }
+  .chat-a-body { font-size:14px; color:var(--text-secondary); line-height:1.6; }
+</style>
+</head>
+<body>
+
+<!-- Fixed header -->
+<div style="position:fixed;top:0;left:0;right:0;z-index:50;background:var(--surface);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:14px">
+  <a href="/" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:var(--surface-elevated);color:var(--text-primary);text-decoration:none;font-size:18px;flex-shrink:0">&#8592;</a>
+  <div style="min-width:0">
+    <div style="font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">TrajectoryRL</div>
+    <div style="font-size:11px;color:var(--text-muted)">SN11 · AI Coding &amp; Dev Tools</div>
+  </div>
+  <div style="margin-left:auto;flex-shrink:0;text-align:right"><div style="font-size:14px;font-weight:700;color:#f85149">4.5/10</div><div style="font-size:10px;color:var(--text-muted)">Early stage</div></div>
+</div>
+
+<!-- Scrollable content -->
+<div style="padding: 72px 16px 100px 16px; max-width: 680px; margin: 0 auto;">
+
+  <div style="margin-bottom:16px"><div style="height:4px;border-radius:2px;background:var(--border);overflow:hidden"><div style="width:45%;height:100%;background:#f85149"></div></div><div style="font-size:12px;color:var(--text-muted);margin-top:6px">Early stage · Clever SKILL.md prompt-engineering competition on Terminal-Bench scenarios, but a 32KB instruction file for a fixed Herm</div></div>
+
+  
+
+  <div id="summary-text" style="font-size:15px;line-height:1.65;color:var(--text-secondary);margin-bottom:8px">Miners are rewarded for writing a single `SKILL.md` instruction file (≤32 KB) that teaches an AI agent (Hermes) how to solve real Terminal-Bench-style operational scenarios. Validators score each pack on `passed_tests / total_tests` from `pytest` (via `ctrf.json`) across all scenarios, with a learning bonus for improving across episodes, and rewards are winner-take-all — the best miner gets 100% of emissions.</div>
+
+  <button id="expand-btn" onclick="toggleFull()" style="font-size:13px;color:var(--text-muted);background:none;border:none;cursor:pointer;padding:4px 0;margin-bottom:16px">Read full analysis ↓</button>
+  <div id="full-text" style="display:none;font-size:14px;line-height:1.65;color:var(--text-secondary);margin-bottom:16px" class="prose"></div>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px"><a href="https://github.com/trajectoryRL/trajectoryRL" target="_blank" style="display:inline-flex;align-items:center;padding:8px 16px;border-radius:10px;border:1px solid var(--border);font-size:13px;font-weight:500;color:#58a6ff;text-decoration:none;background:var(--surface-elevated)">GitHub ↗</a><a href="https://trajrl.com" target="_blank" style="display:inline-flex;align-items:center;padding:8px 16px;border-radius:10px;border:1px solid var(--border);font-size:13px;font-weight:500;color:#58a6ff;text-decoration:none;background:var(--surface-elevated)">Website ↗</a><button onclick="loadEmissions()" style="display:inline-flex;align-items:center;padding:8px 16px;border-radius:10px;border:1px solid var(--border);font-size:13px;font-weight:500;color:#58a6ff;text-decoration:none;background:var(--surface-elevated);cursor:pointer;border:1px solid var(--border)">Emissions ↗</button></div>
+  <div id="emissions-section" style="display:none;margin-top:4px;margin-bottom:16px;padding:14px;border-radius:12px;background:var(--surface-elevated);border:1px solid var(--border)"></div>
+  <div style="margin-top:16px;padding:12px 14px;border-radius:10px;background:var(--surface-elevated);font-size:13px"><span style="color:var(--text-muted)">Market: </span><span style="color:#d29922;font-weight:600">$3.1T</span><div style="color:var(--text-muted);margin-top:4px;font-size:12px">GitHub Copilot (Microsoft), Cursor/Anysphere, Cognition (Devin)</div></div>
+  <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)"><div style="font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:0.05em;margin-bottom:10px">FROM THEIR SITE<span style="font-weight:400;margin-left:8px">2026-05-23</span></div><div style="font-size:13px;line-height:1.6;color:var(--text-secondary)"><div style="margin-bottom:8px">- **Positioning:** Site tagline is &quot;open mind.&quot; with navigation tabs for Home, Live, Winners, Leaderboard, Bench, and Docs — suggests a reinforcement learning subnet centered on competitive benchmarking and live winner tracking, but the content provided contains no actual description of the tech, methodology, or what &quot;trajectory RL&quot; means in their implementation.</div>
+<div style="margin-bottom:8px">- **Launch status:** Page renders live UI scaffolding (block number, epoch counter, winner UID, UTC clock at 03:44:09) but all dynamic fields (TAO price, 24h Alpha, MCAP, 30D Stake APY, block, epoch, winner UID) show em-dashes — either pre-launch, data feed down, or content failed to load in the scrape. Cannot confirm live status from this snapshot.</div>
+<div style="margin-bottom:8px">- **Subnet identity:** Confirmed as SN11 on Bittensor, branded TrajectoryRL (trajrl.com).</div>
+<div style="margin-bottom:8px">- **Miner onboarding:** Not addressed in the extracted content. A &quot;Docs&quot; tab exists but its contents were not scraped.</div>
+<div style="margin-bottom:8px">- **Roadmap / team / backing:** None mentioned in the provided content.</div>
+<div style="margin-bottom:8px">- **Metrics:** No usable metrics — every numeric field in the scrape is blank.</div>
+<div style="margin-bottom:8px">Note: the scrape captured only the landing-page chrome (nav + live-stats widget skeleton). The substantive content likely lives behind the Live, Leaderboard, Bench, and Docs tabs and would need a follow-up fetch to extract.</div></div></div>
+
+  <div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--border)">
+    <div id="chat-msg"></div>
+    <div id="ask-loading" style="display:none;font-size:13px;color:var(--text-muted);padding:8px 0">Fetching live validator code...</div>
+  </div>
+
+</div>
+
+<!-- Fixed bottom input -->
+<div style="position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:12px 16px;padding-bottom:max(16px,env(safe-area-inset-bottom))">
+  <div style="display:flex;gap:10px;max-width:680px;margin:0 auto">
+    <input id="ask-input" type="text" placeholder="Ask disabled in static snapshot"
+      style="flex:1;background:var(--surface-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 16px;font-size:16px;color:var(--text-primary);outline:none"
+      onkeydown="if(event.key==='Enter')ask()">
+    <button onclick="ask()" style="background:#58a6ff22;border:1px solid #58a6ff55;color:#58a6ff;border-radius:12px;padding:12px 20px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap">Ask</button>
+  </div>
+</div>
+
+<script>
+const netuid = 11;
+let chatHistory = [];
+let fullText = '';
+
+window.addEventListener('DOMContentLoaded', () => {
+  const raw = `**Task.** Miners write a \`SKILL.md\` — natural-language instructions/strategies that teach a general agent how to tackle operational tasks. They wrap it in a content-addressed JSON &quot;pack&quot; (schema_version=1, single \`files.SKILL.md\` entry, ≤32,768 bytes), upload it to any HTTP endpoint, and commit \`{sha256}|{url}\` on-chain. No GPU, server, or uptime is required.
+
+**Scoring (reward function).** Each epoch the validator:
+1. Reads the on-chain commitment, fetches the pack, and verifies its SHA256 matches.
+2. Runs the agent (Hermes) inside each scenario\'s Terminal-Bench container, with \`SKILL.md\` + the scenario\'s \`INSTRUCTION.md\` as input.
+3. Spins up a fresh verifier container that runs \`pytest\` and produces \`ctrf.json\`; per-scenario **quality = passed_tests / total_tests** (continuous in [0,1]).
+4. Runs multiple episodes per scenario and computes (\`_SessionResult.compute_scores\`):
+   - \`mean_quality\` across episodes
+   - \`early_mean\` (ep 0–1) and \`late_mean\` (ep 2–3)
+   - \`delta = late_mean − early_mean\`
+   - \`learning_bonus\` derived from delta (rewards skills that improve as the agent gains experience)
+   - \`final_score\` = combination of mean quality + learning bonus
+5. The final per-miner score is the equal-weighted sum across all scenarios. Cost (USD) is tracked as a separate axis, not as a score input.
+
+**Maximizing emissions.** Bittensor weights here are **winner-take-all** — only the top-scoring miner gets ~100% of subnet rewards. To win:
+- Write a *general-purpose* SKILL.md that lifts performance across many heterogeneous scenarios (you don\'t know which scenarios the validator will run, and Season 2 adds new auto-generated ones).
+- Maximize \`pytest\` pass rates inside the actual sandbox containers (not just LLM-judged quality).
+- Encourage strategies that let the agent improve across episodes (positive delta → learning bonus).
+- Be a **first mover** — there\'s an anti-copy mechanism: NCD (normalized compression distance) similarity detection plus a first-mover threshold, so duplicating a winning pack won\'t displace the original.
+
+**Penalties / skip conditions.**
+- **Hash mismatch / unfetchable pack / invalid schema** → pack rejected, no score (\`PackFetcher.verify_submission\` must return valid=True; schema is validated via \`validate_s1\`).
+- **Pack > 32 KB, missing/empty SKILL.md, wrong schema_version** → validation fails, no score.
+- **Provider failure** (Hermes exits non-zero on every scenario, no agent output, $0 cost) → \`SKIP_PROVIDER_FAILURE\` — the eval is discarded rather than submitted as a zero, so transient LLM outages don\'t poison a miner.
+- **Inactivity** (\`INACTIVITY_BLOCKS\`, default ~48h with no fresh commitment) → miner is treated as inactive.
+- **NCD similarity above \`SIMILARITY_THRESHOLD\`** (default 0.80) to an earlier pack → flagged as a copy; first-mover keeps the score.`;
+  fullText = raw;
+  const full = document.getElementById('full-text');
+  full.innerHTML = (typeof marked !== 'undefined') ? marked.parse(raw) : raw;
+});
+
+function toggleFull() {
+  const full = document.getElementById('full-text');
+  const btn = document.getElementById('expand-btn');
+  if (full.style.display === 'none') {
+    full.style.display = 'block';
+    btn.textContent = 'Hide full analysis ↑';
+  } else {
+    full.style.display = 'none';
+    btn.textContent = 'Read full analysis ↓';
+  }
+}
+
+function addMessage(role, text) {
+  const container = document.getElementById('chat-msg');
+  const div = document.createElement('div');
+  div.className = 'chat-q';
+  if (role === 'user') {
+    div.innerHTML = '<div class="chat-q-label">You</div><div class="chat-q-bubble">' + text.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>';
+  } else {
+    const parsed = (typeof marked !== 'undefined') ? marked.parse(text) : text;
+    div.innerHTML = '<div class="chat-a-label">Claude</div><div class="chat-a-body prose">' + parsed + '</div>';
+  }
+  container.appendChild(div);
+  div.scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+
+function ask() {
+  const input = document.getElementById('ask-input');
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+  addMessage('user', q);
+  chatHistory.push({role: 'user', content: q});
+  document.getElementById('ask-loading').style.display = 'block';
+  fetch('/api/subnets/' + netuid + '/ask', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({question: q, history: chatHistory.slice(0,-1)})
+  })
+  .then(r => r.json())
+  .then(resp => {
+    document.getElementById('ask-loading').style.display = 'none';
+    const answer = resp.answer || 'No response.';
+    chatHistory.push({role: 'assistant', content: answer});
+    addMessage('assistant', answer);
+  })
+  .catch(() => {
+    document.getElementById('ask-loading').style.display = 'none';
+    addMessage('assistant', 'Failed — try again.');
+  });
+}
+
+function loadEmissions() {
+  const el = document.getElementById('emissions-section');
+  if (el.dataset.loaded === '1') {
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    return;
+  }
+  el.dataset.loaded = '1';
+  el.style.display = 'block';
+  el.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:12px 0">Loading emissions...</div>';
+  fetch('/api/subnets/11/emissions')
+    .then(r => r.json())
+    .then(resp => {
+      const data = resp.rows || [];
+      const rob = resp.recycle_or_burn || 'Burn';
+      if (!data.length) { el.innerHTML = '<div style="color:var(--text-muted);font-size:13px">No emission data yet.</div>'; return; }
+      const robColor = rob === 'Recycle' ? '#d29922' : '#f85149';
+      const robLow = rob.toLowerCase();
+      let html = '<div style="font-size:11px;color:var(--text-muted);margin-bottom:12px">Mode: <span style="color:' + robColor + ';font-weight:600">' + rob + '</span> &middot; <span style="color:#f85149">Red = owner key (' + robLow + 'd)</span> &middot; <span style="color:#f97316">Orange = owner miner (also ' + robLow + 'd)</span></div>';
+      const ownerRows = data.filter(d => d.is_owner || d.is_primary_owner);
+      if (ownerRows.length > 1) {
+        const ownerPct = ownerRows.reduce((s, d) => s + d.share_pct, 0);
+        const ownerList = ownerRows.map(d => 'UID ' + d.uid).join(', ');
+        html += '<div style="background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.3);border-radius:6px;padding:8px 10px;margin-bottom:10px;font-size:11px;color:#f97316;line-height:1.6">' +
+          '<strong>Same operator controls ' + ownerRows.length + ' UIDs:</strong> ' + ownerList + '<br>' +
+          '<span style="color:#9ca3af">Combined: <strong style="color:#f97316">' + ownerPct.toFixed(1) + '%</strong> of miner emissions — all ' + robLow + 'd</span>' +
+        '</div>';
+      }
+      html += '<div style="space-y:4px">';
+      const max = Math.max(...data.map(d => d.share_pct));
+      data.slice(0, 30).forEach(d => {
+        const pct = d.share_pct || 0;
+        const barW = max > 0 ? Math.round((pct / max) * 100) : 0;
+        const color = d.is_primary_owner ? '#ef4444' : d.is_owner ? '#f97316' : '#3b82f6';
+        const label = d.is_primary_owner ? ' (owner key)' : d.is_owner ? ' (owner miner)' : '';
+        html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">' +
+          '<div style="font-size:11px;color:var(--text-muted);width:50px;flex-shrink:0">UID ' + d.uid + '</div>' +
+          '<div style="flex:1;height:8px;border-radius:4px;background:var(--border);overflow:hidden">' +
+            '<div style="width:' + barW + '%;height:100%;background:' + color + ';border-radius:4px"></div>' +
+          '</div>' +
+          '<div style="font-size:11px;font-family:monospace;width:52px;text-align:right;flex-shrink:0;color:var(--text-secondary)">' + pct.toFixed(2) + '%</div>' +
+          '<div style="font-size:10px;color:var(--text-muted)">' + label + '</div>' +
+          '</div>';
+      });
+      if (data.length > 30) html += '<div style="font-size:11px;color:var(--text-muted)">' + (data.length - 30) + ' more miners...</div>';
+      html += '</div>';
+      el.innerHTML = html;
+    })
+    .catch(() => { el.innerHTML = '<div style="color:#f85149;font-size:13px">Failed to load.</div>'; });
+}
+</script>
+</body>
+</html>

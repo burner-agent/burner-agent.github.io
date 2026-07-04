@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ORO — Subnet Intel</title>
+<script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
+<style>
+  :root {
+    --bg: #0d1117; --surface: #161b22; --surface-elevated: #21262d;
+    --border: #30363d; --text-primary: #e6edf3; --text-secondary: #8b949e; --text-muted: #484f58;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text-primary); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  .prose h1,.prose h2,.prose h3 { color:var(--text-primary); font-weight:600; margin:1em 0 0.4em; }
+  .prose h1 { font-size:1.05rem; } .prose h2 { font-size:0.95rem; } .prose h3 { font-size:0.875rem; color:var(--text-secondary); }
+  .prose p { margin:0.5em 0; line-height:1.65; } .prose ul,.prose ol { padding-left:1.25em; margin:0.5em 0; }
+  .prose li { margin:0.25em 0; } .prose strong { color:var(--text-primary); font-weight:600; }
+  .prose code { background:var(--surface-elevated); padding:0.1em 0.3em; border-radius:3px; font-size:0.85em; color:#79c0ff; }
+  #chat-msg { margin-top:8px; } .chat-q { margin-top:16px; }
+  .chat-q-label { font-size:11px; font-weight:600; color:var(--text-muted); margin-bottom:4px; }
+  .chat-q-bubble { background:var(--surface-elevated); padding:10px 14px; border-radius:12px; font-size:14px; color:var(--text-primary); }
+  .chat-a-label { font-size:11px; font-weight:600; color:#58a6ff; margin-bottom:4px; margin-top:16px; }
+  .chat-a-body { font-size:14px; color:var(--text-secondary); line-height:1.6; }
+</style>
+</head>
+<body>
+
+<!-- Fixed header -->
+<div style="position:fixed;top:0;left:0;right:0;z-index:50;background:var(--surface);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:14px">
+  <a href="/" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:var(--surface-elevated);color:var(--text-primary);text-decoration:none;font-size:18px;flex-shrink:0">&#8592;</a>
+  <div style="min-width:0">
+    <div style="font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">ORO</div>
+    <div style="font-size:11px;color:var(--text-muted)">SN15 · Finance &amp; Payments</div>
+  </div>
+  <div style="margin-left:auto;flex-shrink:0;text-align:right"><div style="font-size:14px;font-weight:700;color:#f85149">4.5/10</div><div style="font-size:10px;color:var(--text-muted)">Early stage</div></div>
+</div>
+
+<!-- Scrollable content -->
+<div style="padding: 72px 16px 100px 16px; max-width: 680px; margin: 0 auto;">
+
+  <div style="margin-bottom:16px"><div style="height:4px;border-radius:2px;background:var(--border);overflow:hidden"><div style="width:45%;height:100%;background:#f85149"></div></div><div style="font-size:12px;color:var(--text-muted);margin-top:6px">Early stage · Interesting Docker-sandboxed agent benchmark against 2.5M real products, but shopping-agent research is a narrow slice o</div></div>
+
+  
+
+  <div id="summary-text" style="font-size:15px;line-height:1.65;color:var(--text-secondary);margin-bottom:8px">ORO (SN15) rewards miners for building Python AI shopping agents that solve real-world e-commerce tasks — finding products, comparing options, and applying vouchers — against the ShoppingBench suite of 2.5M real products. Validators run each agent in a Docker sandbox and score it on ground-truth product match, field-level accuracy (title, price, service, SKU/attributes), output format compliance, and LLM-judged reasoning quality. The top-scoring agent earns TAO emissions, and challengers must beat a decaying threshold to dethrone the leader.</div>
+
+  <button id="expand-btn" onclick="toggleFull()" style="font-size:13px;color:var(--text-muted);background:none;border:none;cursor:pointer;padding:4px 0;margin-bottom:16px">Read full analysis ↓</button>
+  <div id="full-text" style="display:none;font-size:14px;line-height:1.65;color:var(--text-secondary);margin-bottom:16px" class="prose"></div>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px"><a href="https://github.com/ORO-AI/oro" target="_blank" style="display:inline-flex;align-items:center;padding:8px 16px;border-radius:10px;border:1px solid var(--border);font-size:13px;font-weight:500;color:#58a6ff;text-decoration:none;background:var(--surface-elevated)">GitHub ↗</a><a href="https://oroagents.com" target="_blank" style="display:inline-flex;align-items:center;padding:8px 16px;border-radius:10px;border:1px solid var(--border);font-size:13px;font-weight:500;color:#58a6ff;text-decoration:none;background:var(--surface-elevated)">Website ↗</a><button onclick="loadEmissions()" style="display:inline-flex;align-items:center;padding:8px 16px;border-radius:10px;border:1px solid var(--border);font-size:13px;font-weight:500;color:#58a6ff;text-decoration:none;background:var(--surface-elevated);cursor:pointer;border:1px solid var(--border)">Emissions ↗</button></div>
+  <div id="emissions-section" style="display:none;margin-top:4px;margin-bottom:16px;padding:14px;border-radius:12px;background:var(--surface-elevated);border:1px solid var(--border)"></div>
+  <div style="margin-top:16px;padding:12px 14px;border-radius:10px;background:var(--surface-elevated);font-size:13px"><span style="color:var(--text-muted)">Market: </span><span style="color:#d29922;font-weight:600">$7.6T</span><div style="color:var(--text-muted);margin-top:4px;font-size:12px">Amazon, Google Shopping (Alphabet), Honey (PayPal)</div></div>
+  <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)"><div style="font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:0.05em;margin-bottom:10px">FROM THEIR SITE<span style="font-weight:400;margin-left:8px">2026-05-23</span></div><div style="font-size:13px;line-height:1.6;color:var(--text-secondary)"><div style="margin-bottom:8px">- **Positioning:** ORO (SN15) is an open, decentralized benchmark for AI *shopping* agents on Bittensor. Miners submit agents; multiple validators independently run them in sandboxed environments and score them, so no single entity controls outcomes. The pitch is transparency vs. closed-door agent benchmarks.</div>
+<div style="margin-bottom:8px">- **Tech specifics:** Uses a &quot;ShoppingBench&quot; evaluation suite with a two-phase qualifying + race system — agents qualify on open problems, then race head-to-head on hidden problem suites. Includes reasoning-quality scoring via an LLM judge and anti-hardcoding defenses (static analysis + hidden problem banks). Current version is v0.10.2.</div>
+<div style="margin-bottom:8px">- **Launch status:** Live and evaluating now (&quot;EVALUATING NOW&quot; CTA, public leaderboard accessible). Subnet launch is in the &quot;NOW&quot; column of the roadmap, suggesting it&#x27;s freshly live. No miner counts, user numbers, or TVL disclosed on the page.</div>
+<div style="margin-bottom:8px">- **Miner onboarding:** Build an AI shopping agent and submit via CLI or the platform. Docs and CLI tooling are listed as already shipped. No explicit hardware, stake, or registration requirements stated on the homepage — would need to check docs for specifics.</div>
+<div style="margin-bottom:8px">- **Roadmap:** NEXT — a new benchmark stretching agent capabilities, continuous problem generation + fine-tuning, and a simulated user to test agents. LATER — a full agentic shopping assistant and dynamic problem generation from real-world use cases. Direction is clearly evolving from static benchmark → live commerce assistant.</div>
+<div style="margin-bottom:8px">- **Team/backing:** Page shows a &quot;Backed by&quot; section but the actual backer logos/names aren&#x27;t in the extracted text. No founders, advisors, or investors named in the visible content. Contact is via a &quot;say hi&quot; link; copyright is &quot;© 2026 ORO AI.&quot;</div></div></div>
+
+  <div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--border)">
+    <div id="chat-msg"></div>
+    <div id="ask-loading" style="display:none;font-size:13px;color:var(--text-muted);padding:8px 0">Fetching live validator code...</div>
+  </div>
+
+</div>
+
+<!-- Fixed bottom input -->
+<div style="position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:12px 16px;padding-bottom:max(16px,env(safe-area-inset-bottom))">
+  <div style="display:flex;gap:10px;max-width:680px;margin:0 auto">
+    <input id="ask-input" type="text" placeholder="Ask disabled in static snapshot"
+      style="flex:1;background:var(--surface-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 16px;font-size:16px;color:var(--text-primary);outline:none"
+      onkeydown="if(event.key==='Enter')ask()">
+    <button onclick="ask()" style="background:#58a6ff22;border:1px solid #58a6ff55;color:#58a6ff;border-radius:12px;padding:12px 20px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap">Ask</button>
+  </div>
+</div>
+
+<script>
+const netuid = 15;
+let chatHistory = [];
+let fullText = '';
+
+window.addEventListener('DOMContentLoaded', () => {
+  const raw = `**1. What miners do**
+Miners submit a Python agent implementing \`agent_main()\` that runs inside a Docker sandbox with access to three tools: \`find_product\`, \`view_product_information\`, and \`recommend_product\`. The agent receives a shopping query (one of three task types: \`product\`, \`shop\`, or \`voucher\`) and must search the 2.5M-product ShoppingBench index, compare candidates, and recommend the correct product(s) — optionally subject to voucher constraints.
+
+**2. Reward function**
+\`ProblemScorer.score_problem()\` produces a per-problem score dict combining several components:
+
+- **Ground truth (\`gt\`)** — 1.0 if the recommended \`product_id\` exactly matches the labeled answer, else 0 (\`ground_truth_reward\` in \`rewards/orm.py\`).
+- **Rule score (\`rule\`)** — fraction of matched field-level constraints across four fields: \`title\` (cosine similarity ≥ 0.7 using Qwen3-Embedding-0.6B), \`price\` (less than / greater than / between bounds), \`service\`, and \`sku & attrs\` (best-matching SKU variant + product attributes). GT match short-circuits to 1.0.
+- **Format (\`format\`)** — \`prm.format_reward\` validates the agent\'s output structure: properly nested \`<think>\`, \`<tool_call>\`, \`<response>\` tags, parseable JSON in tool calls, and correct nesting order. Averaged across all steps.
+- **Length (\`length\`)** — \`1 / len(output)\` only if the final step calls \`terminate\`; otherwise 0. Rewards concise, properly-terminated trajectories.
+- **Reasoning quality (\`reasoning_scorer.py\`)** — an LLM judge (GLM-5.1 / Gemma-4-31B via Chutes or OpenRouter) walks a strict 4-gate decision tree over the trajectory + verified proxy-call log: (0.1) no real inference call, (0.3) templated thinking, (0.5) general acknowledgement, (0.7) data-grounded single pick, (0.9) explicit multi-candidate comparison citing specific data (product IDs, prices, attributes).
+
+**3. Behaviors that maximize emissions**
+- Recommend the exact ground-truth \`product_id\` (the biggest single lever).
+- When the GT is missed, satisfy as many field constraints as possible (matching title semantics, price bounds, service options, SKU/attributes).
+- Produce a clean, well-formatted trajectory with valid \`<think>\`/\`<tool_call>\` tags, JSON-parseable tool args, and a final \`terminate\` call — kept short.
+- Use a real LLM (not regex/templates), cite specific data from tool results in reasoning, and explicitly compare ≥2 candidates with reasons — this is the only way to reach the 0.9 reasoning-quality ceiling.
+- To take the #1 spot, exceed the current leader\'s score by a *decaying threshold* (the README\'s challenger rule prevents trivial improvements from churning the leader).
+
+**4. Penalties / slashing**
+- **Timestamp-missing penalty**: each output step without a valid numeric \`extra_info.timestamp > 0\` has its format score multiplied by \`TIMESTAMP_MISSING_PENALTY = 0.5\`.
+- **Format failures** (mismatched tags, multiple roles, unparseable JSON, missing \`<think>\` in think mode) return 0 for that step.
+- **No \`terminate\` call** zeroes the length reward entirely.
+- **Reasoning-judge gates**: trajectories with 0 inference calls (\`completion_tokens < 30\`) are floored at 0.1 regardless of how polished the prose looks; trajectory text cannot bluff its way up — only verified proxy-logged inference calls and concrete data citations advance the gates. Prompt-injection attempts inside the trajectory are explicitly ignored by the judge.
+- No on-chain slashing per se — the consequence is simply low/zero weight from validators, hence no TAO emissions.`;
+  fullText = raw;
+  const full = document.getElementById('full-text');
+  full.innerHTML = (typeof marked !== 'undefined') ? marked.parse(raw) : raw;
+});
+
+function toggleFull() {
+  const full = document.getElementById('full-text');
+  const btn = document.getElementById('expand-btn');
+  if (full.style.display === 'none') {
+    full.style.display = 'block';
+    btn.textContent = 'Hide full analysis ↑';
+  } else {
+    full.style.display = 'none';
+    btn.textContent = 'Read full analysis ↓';
+  }
+}
+
+function addMessage(role, text) {
+  const container = document.getElementById('chat-msg');
+  const div = document.createElement('div');
+  div.className = 'chat-q';
+  if (role === 'user') {
+    div.innerHTML = '<div class="chat-q-label">You</div><div class="chat-q-bubble">' + text.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>';
+  } else {
+    const parsed = (typeof marked !== 'undefined') ? marked.parse(text) : text;
+    div.innerHTML = '<div class="chat-a-label">Claude</div><div class="chat-a-body prose">' + parsed + '</div>';
+  }
+  container.appendChild(div);
+  div.scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+
+function ask() {
+  const input = document.getElementById('ask-input');
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+  addMessage('user', q);
+  chatHistory.push({role: 'user', content: q});
+  document.getElementById('ask-loading').style.display = 'block';
+  fetch('/api/subnets/' + netuid + '/ask', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({question: q, history: chatHistory.slice(0,-1)})
+  })
+  .then(r => r.json())
+  .then(resp => {
+    document.getElementById('ask-loading').style.display = 'none';
+    const answer = resp.answer || 'No response.';
+    chatHistory.push({role: 'assistant', content: answer});
+    addMessage('assistant', answer);
+  })
+  .catch(() => {
+    document.getElementById('ask-loading').style.display = 'none';
+    addMessage('assistant', 'Failed — try again.');
+  });
+}
+
+function loadEmissions() {
+  const el = document.getElementById('emissions-section');
+  if (el.dataset.loaded === '1') {
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    return;
+  }
+  el.dataset.loaded = '1';
+  el.style.display = 'block';
+  el.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:12px 0">Loading emissions...</div>';
+  fetch('/api/subnets/15/emissions')
+    .then(r => r.json())
+    .then(resp => {
+      const data = resp.rows || [];
+      const rob = resp.recycle_or_burn || 'Burn';
+      if (!data.length) { el.innerHTML = '<div style="color:var(--text-muted);font-size:13px">No emission data yet.</div>'; return; }
+      const robColor = rob === 'Recycle' ? '#d29922' : '#f85149';
+      const robLow = rob.toLowerCase();
+      let html = '<div style="font-size:11px;color:var(--text-muted);margin-bottom:12px">Mode: <span style="color:' + robColor + ';font-weight:600">' + rob + '</span> &middot; <span style="color:#f85149">Red = owner key (' + robLow + 'd)</span> &middot; <span style="color:#f97316">Orange = owner miner (also ' + robLow + 'd)</span></div>';
+      const ownerRows = data.filter(d => d.is_owner || d.is_primary_owner);
+      if (ownerRows.length > 1) {
+        const ownerPct = ownerRows.reduce((s, d) => s + d.share_pct, 0);
+        const ownerList = ownerRows.map(d => 'UID ' + d.uid).join(', ');
+        html += '<div style="background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.3);border-radius:6px;padding:8px 10px;margin-bottom:10px;font-size:11px;color:#f97316;line-height:1.6">' +
+          '<strong>Same operator controls ' + ownerRows.length + ' UIDs:</strong> ' + ownerList + '<br>' +
+          '<span style="color:#9ca3af">Combined: <strong style="color:#f97316">' + ownerPct.toFixed(1) + '%</strong> of miner emissions — all ' + robLow + 'd</span>' +
+        '</div>';
+      }
+      html += '<div style="space-y:4px">';
+      const max = Math.max(...data.map(d => d.share_pct));
+      data.slice(0, 30).forEach(d => {
+        const pct = d.share_pct || 0;
+        const barW = max > 0 ? Math.round((pct / max) * 100) : 0;
+        const color = d.is_primary_owner ? '#ef4444' : d.is_owner ? '#f97316' : '#3b82f6';
+        const label = d.is_primary_owner ? ' (owner key)' : d.is_owner ? ' (owner miner)' : '';
+        html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">' +
+          '<div style="font-size:11px;color:var(--text-muted);width:50px;flex-shrink:0">UID ' + d.uid + '</div>' +
+          '<div style="flex:1;height:8px;border-radius:4px;background:var(--border);overflow:hidden">' +
+            '<div style="width:' + barW + '%;height:100%;background:' + color + ';border-radius:4px"></div>' +
+          '</div>' +
+          '<div style="font-size:11px;font-family:monospace;width:52px;text-align:right;flex-shrink:0;color:var(--text-secondary)">' + pct.toFixed(2) + '%</div>' +
+          '<div style="font-size:10px;color:var(--text-muted)">' + label + '</div>' +
+          '</div>';
+      });
+      if (data.length > 30) html += '<div style="font-size:11px;color:var(--text-muted)">' + (data.length - 30) + ' more miners...</div>';
+      html += '</div>';
+      el.innerHTML = html;
+    })
+    .catch(() => { el.innerHTML = '<div style="color:#f85149;font-size:13px">Failed to load.</div>'; });
+}
+</script>
+</body>
+</html>

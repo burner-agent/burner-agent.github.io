@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Allways — Subnet Intel</title>
+<script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
+<style>
+  :root {
+    --bg: #0d1117; --surface: #161b22; --surface-elevated: #21262d;
+    --border: #30363d; --text-primary: #e6edf3; --text-secondary: #8b949e; --text-muted: #484f58;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text-primary); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  .prose h1,.prose h2,.prose h3 { color:var(--text-primary); font-weight:600; margin:1em 0 0.4em; }
+  .prose h1 { font-size:1.05rem; } .prose h2 { font-size:0.95rem; } .prose h3 { font-size:0.875rem; color:var(--text-secondary); }
+  .prose p { margin:0.5em 0; line-height:1.65; } .prose ul,.prose ol { padding-left:1.25em; margin:0.5em 0; }
+  .prose li { margin:0.25em 0; } .prose strong { color:var(--text-primary); font-weight:600; }
+  .prose code { background:var(--surface-elevated); padding:0.1em 0.3em; border-radius:3px; font-size:0.85em; color:#79c0ff; }
+  #chat-msg { margin-top:8px; } .chat-q { margin-top:16px; }
+  .chat-q-label { font-size:11px; font-weight:600; color:var(--text-muted); margin-bottom:4px; }
+  .chat-q-bubble { background:var(--surface-elevated); padding:10px 14px; border-radius:12px; font-size:14px; color:var(--text-primary); }
+  .chat-a-label { font-size:11px; font-weight:600; color:#58a6ff; margin-bottom:4px; margin-top:16px; }
+  .chat-a-body { font-size:14px; color:var(--text-secondary); line-height:1.6; }
+</style>
+</head>
+<body>
+
+<!-- Fixed header -->
+<div style="position:fixed;top:0;left:0;right:0;z-index:50;background:var(--surface);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;gap:14px">
+  <a href="/" style="display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;background:var(--surface-elevated);color:var(--text-primary);text-decoration:none;font-size:18px;flex-shrink:0">&#8592;</a>
+  <div style="min-width:0">
+    <div style="font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Allways</div>
+    <div style="font-size:11px;color:var(--text-muted)">SN7 · Finance &amp; Payments</div>
+  </div>
+  <div style="margin-left:auto;flex-shrink:0;text-align:right"><div style="font-size:14px;font-weight:700;color:#d29922">5.5/10</div><div style="font-size:10px;color:var(--text-muted)">Developing</div></div>
+</div>
+
+<!-- Scrollable content -->
+<div style="padding: 72px 16px 100px 16px; max-width: 680px; margin: 0 auto;">
+
+  <div style="margin-bottom:16px"><div style="height:4px;border-radius:2px;background:var(--border);overflow:hidden"><div style="width:55%;height:100%;background:#d29922"></div></div><div style="font-size:12px;color:var(--text-muted);margin-top:6px">Developing · Functional cross-chain swap protocol with on-chain verification and collateral locking, but limited to BTC↔TAO with low </div></div>
+
+  
+
+  <div id="summary-text" style="font-size:15px;line-height:1.65;color:var(--text-secondary);margin-bottom:8px">Allways (SN7) rewards miners for fulfilling cross-chain swaps (currently BTC↔TAO) — miners post exchange rates, lock TAO collateral, and execute trades by sending destination funds after users deposit source funds. Validators independently verify on-chain transactions and vote through a smart contract that manages a credibility ledger and slashes collateral for misbehavior. Maximum emissions go to miners who maintain competitive rates, sufficient collateral, and reliably complete swaps before timeout without triggering slashing.</div>
+
+  <button id="expand-btn" onclick="toggleFull()" style="font-size:13px;color:var(--text-muted);background:none;border:none;cursor:pointer;padding:4px 0;margin-bottom:16px">Read full analysis ↓</button>
+  <div id="full-text" style="display:none;font-size:14px;line-height:1.65;color:var(--text-secondary);margin-bottom:16px" class="prose"></div>
+
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px"><a href="https://github.com/entrius/allways" target="_blank" style="display:inline-flex;align-items:center;padding:8px 16px;border-radius:10px;border:1px solid var(--border);font-size:13px;font-weight:500;color:#58a6ff;text-decoration:none;background:var(--surface-elevated)">GitHub ↗</a><a href="https://all-ways.io/" target="_blank" style="display:inline-flex;align-items:center;padding:8px 16px;border-radius:10px;border:1px solid var(--border);font-size:13px;font-weight:500;color:#58a6ff;text-decoration:none;background:var(--surface-elevated)">Website ↗</a><button onclick="loadEmissions()" style="display:inline-flex;align-items:center;padding:8px 16px;border-radius:10px;border:1px solid var(--border);font-size:13px;font-weight:500;color:#58a6ff;text-decoration:none;background:var(--surface-elevated);cursor:pointer;border:1px solid var(--border)">Emissions ↗</button></div>
+  <div id="emissions-section" style="display:none;margin-top:4px;margin-bottom:16px;padding:14px;border-radius:12px;background:var(--surface-elevated);border:1px solid var(--border)"></div>
+  <div style="margin-top:16px;padding:12px 14px;border-radius:10px;background:var(--surface-elevated);font-size:13px"><span style="color:var(--text-muted)">Market: </span><span style="color:#d29922;font-weight:600">$4.5T</span><div style="color:var(--text-muted);margin-top:4px;font-size:12px">Visa, Mastercard, JPMorgan, Goldman Sachs, NYSE/CME, SWIFT</div></div>
+  <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)"><div style="font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:0.05em;margin-bottom:10px">FROM THEIR SITE<span style="font-weight:400;margin-left:8px">2026-05-23</span></div><div style="font-size:13px;line-height:1.6;color:var(--text-secondary)"><div style="margin-bottom:8px">- **Positioning:** Allways bills itself as a &quot;universal transaction layer&quot; on Bittensor Subnet 7, focused on trustless peer-to-peer transactions. The creators emphasize they do not custody, control, or intermediate funds — the protocol itself facilitates the transactions.</div>
+<div style="margin-bottom:8px">- **Status:** Explicitly labeled as &quot;permissionless, open-source, beta software.&quot; No production/mainnet claim, no user counts, no transaction volume, and no TVL figures are disclosed on the landing page.</div>
+<div style="margin-bottom:8px">- **Product surface:** The site advertises four product entry points — Dashboard, Exchange, Agents, and Docs — plus a Miners section, suggesting both a trading/exchange product and an agent-based component sit on top of the transaction layer. No feature details are given on this page.</div>
+<div style="margin-bottom:8px">- **Miner onboarding:** A &quot;MINERS&quot; nav link exists but the landing content provides zero specifics on requirements, hardware, stake, or registration process.</div>
+<div style="margin-bottom:8px">- **Roadmap / team / backing:** None disclosed on this page. No founders, investors, advisors, partnerships, or milestone dates are named. Community/code links point to GitHub, X, and Discord (deeper detail would require visiting those).</div>
+<div style="margin-bottom:8px">- **Caveats:** The site leans heavily on disclaimers (&quot;Use at your own risk. No warranty. Not financial advice.&quot;) and directs users to review the open-source code before use — consistent with very early-stage beta positioning rather than a polished launch.</div></div></div>
+
+  <div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--border)">
+    <div id="chat-msg"></div>
+    <div id="ask-loading" style="display:none;font-size:13px;color:var(--text-muted);padding:8px 0">Fetching live validator code...</div>
+  </div>
+
+</div>
+
+<!-- Fixed bottom input -->
+<div style="position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:12px 16px;padding-bottom:max(16px,env(safe-area-inset-bottom))">
+  <div style="display:flex;gap:10px;max-width:680px;margin:0 auto">
+    <input id="ask-input" type="text" placeholder="Ask disabled in static snapshot"
+      style="flex:1;background:var(--surface-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 16px;font-size:16px;color:var(--text-primary);outline:none"
+      onkeydown="if(event.key==='Enter')ask()">
+    <button onclick="ask()" style="background:#58a6ff22;border:1px solid #58a6ff55;color:#58a6ff;border-radius:12px;padding:12px 20px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap">Ask</button>
+  </div>
+</div>
+
+<script>
+const netuid = 7;
+let chatHistory = [];
+let fullText = '';
+
+window.addEventListener('DOMContentLoaded', () => {
+  const raw = `**1. What miners do**
+Miners run an order-book-style market-making service for trustless cross-chain swaps:
+- Post a committed \`MinerPair\` on-chain via Bittensor commitments — a price pair (e.g. BTC↔TAO), a forward \`rate\`, a \`counter_rate\`, and a deposit/fulfillment address on each chain.
+- Lock TAO collateral in the Allways smart contract (must stay above \`min_collateral\`).
+- Call \`MinerActivateSynapse\` to broadcast to validators; validators independently verify the commitment + collateral and vote on-chain. Quorum activation flips the \`is_active\` flag.
+- When a user reserves a swap with them, verify the user\'s source-chain deposit, then send the post-fee \`user_receives_amount\` on the destination chain before \`timeout_block - MINER_TIMEOUT_CUSHION_BLOCKS\`, and call \`mark_fulfilled\` with the destination tx hash.
+
+**2. Scoring / reward function**
+This codebase is unusual for a Bittensor subnet — there is **no traditional \`set_weights\` reward function based on a quality score**. Instead, emissions flow through a **smart-contract-mediated credibility and collateral system**:
+- Validators don\'t compute a numeric score per miner; they verify each swap independently and vote on outcomes through the contract.
+- The persistent \`swap_outcomes\` table in \`~/.allways/validator/state.db\` is described as the &quot;all-time credibility ledger&quot; — successful fulfillments accumulate, failures count against the miner.
+- Validators also vote on \`MinerActivate\` (gating who can earn at all) and \`SwapReserve\` / \`SwapConfirm\` / \`mark_fulfilled\` (gating each individual trade).
+- Collateral acts as the economic stake — it\'s required to participate and is at risk on misbehavior.
+
+**3. Behaviors that maximize emissions**
+- Keep collateral well above \`min_collateral\` so larger swaps can be reserved against you.
+- Post tight, accurate rates in both directions (forward and counter) — better-quoted miners win more reservations.
+- Run a reliable node with healthy chain providers so source-tx verification and destination sends never stall.
+- Fulfill quickly, well inside \`timeout_block - MINER_TIMEOUT_CUSHION_BLOCKS\`, to avoid timeout slashing.
+- Maintain a persistent \`sent_cache\` on disk so restarts don\'t cause double-sends or missed \`mark_fulfilled\` calls.
+- Stay activated (don\'t fall below min collateral, don\'t let your commitment go stale).
+
+**4. Penalties / slashing**
+- **Collateral slashing** is enforced by the smart contract for failed swaps — explicitly framed as &quot;validators … vote on outcomes&quot; and &quot;a smart contract enforces outcomes through collateral and slashing.&quot;
+- **Reservation cooldowns**: failed reservations put the source address on cooldown that **doubles** with each failure (\`RESERVATION_COOLDOWN_BLOCKS\`, &quot;Each failed reservation doubles the next cooldown&quot;).
+- **Timeout penalty**: if the miner doesn\'t fulfill before the deadline, the swap fails and the miner is slashed — the \`MINER_TIMEOUT_CUSHION_BLOCKS\` exists specifically so slow destination-chain inclusion doesn\'t accidentally trigger this.
+- **Double-send risk**: the \`SwapFulfiller\` warns CRITICAL when a stale send has no confirmed \`mark_fulfilled\` because &quot;funds may have been sent without on-chain credit&quot; — i.e. the miner paid out but won\'t get rewarded.
+- **Deactivation**: dropping below \`min_collateral\`, failing commitment checks, or losing validator quorum flips \`is_active=false\`, halting all earnings until reactivated.
+
+Net effect: emissions accrue to miners who are well-collateralized, competitively priced, reliably online, and never miss a fulfillment deadline — and the contract directly burns collateral from those who fail.`;
+  fullText = raw;
+  const full = document.getElementById('full-text');
+  full.innerHTML = (typeof marked !== 'undefined') ? marked.parse(raw) : raw;
+});
+
+function toggleFull() {
+  const full = document.getElementById('full-text');
+  const btn = document.getElementById('expand-btn');
+  if (full.style.display === 'none') {
+    full.style.display = 'block';
+    btn.textContent = 'Hide full analysis ↑';
+  } else {
+    full.style.display = 'none';
+    btn.textContent = 'Read full analysis ↓';
+  }
+}
+
+function addMessage(role, text) {
+  const container = document.getElementById('chat-msg');
+  const div = document.createElement('div');
+  div.className = 'chat-q';
+  if (role === 'user') {
+    div.innerHTML = '<div class="chat-q-label">You</div><div class="chat-q-bubble">' + text.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>';
+  } else {
+    const parsed = (typeof marked !== 'undefined') ? marked.parse(text) : text;
+    div.innerHTML = '<div class="chat-a-label">Claude</div><div class="chat-a-body prose">' + parsed + '</div>';
+  }
+  container.appendChild(div);
+  div.scrollIntoView({behavior: 'smooth', block: 'start'});
+}
+
+function ask() {
+  const input = document.getElementById('ask-input');
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+  addMessage('user', q);
+  chatHistory.push({role: 'user', content: q});
+  document.getElementById('ask-loading').style.display = 'block';
+  fetch('/api/subnets/' + netuid + '/ask', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({question: q, history: chatHistory.slice(0,-1)})
+  })
+  .then(r => r.json())
+  .then(resp => {
+    document.getElementById('ask-loading').style.display = 'none';
+    const answer = resp.answer || 'No response.';
+    chatHistory.push({role: 'assistant', content: answer});
+    addMessage('assistant', answer);
+  })
+  .catch(() => {
+    document.getElementById('ask-loading').style.display = 'none';
+    addMessage('assistant', 'Failed — try again.');
+  });
+}
+
+function loadEmissions() {
+  const el = document.getElementById('emissions-section');
+  if (el.dataset.loaded === '1') {
+    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    return;
+  }
+  el.dataset.loaded = '1';
+  el.style.display = 'block';
+  el.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:12px 0">Loading emissions...</div>';
+  fetch('/api/subnets/7/emissions')
+    .then(r => r.json())
+    .then(resp => {
+      const data = resp.rows || [];
+      const rob = resp.recycle_or_burn || 'Burn';
+      if (!data.length) { el.innerHTML = '<div style="color:var(--text-muted);font-size:13px">No emission data yet.</div>'; return; }
+      const robColor = rob === 'Recycle' ? '#d29922' : '#f85149';
+      const robLow = rob.toLowerCase();
+      let html = '<div style="font-size:11px;color:var(--text-muted);margin-bottom:12px">Mode: <span style="color:' + robColor + ';font-weight:600">' + rob + '</span> &middot; <span style="color:#f85149">Red = owner key (' + robLow + 'd)</span> &middot; <span style="color:#f97316">Orange = owner miner (also ' + robLow + 'd)</span></div>';
+      const ownerRows = data.filter(d => d.is_owner || d.is_primary_owner);
+      if (ownerRows.length > 1) {
+        const ownerPct = ownerRows.reduce((s, d) => s + d.share_pct, 0);
+        const ownerList = ownerRows.map(d => 'UID ' + d.uid).join(', ');
+        html += '<div style="background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.3);border-radius:6px;padding:8px 10px;margin-bottom:10px;font-size:11px;color:#f97316;line-height:1.6">' +
+          '<strong>Same operator controls ' + ownerRows.length + ' UIDs:</strong> ' + ownerList + '<br>' +
+          '<span style="color:#9ca3af">Combined: <strong style="color:#f97316">' + ownerPct.toFixed(1) + '%</strong> of miner emissions — all ' + robLow + 'd</span>' +
+        '</div>';
+      }
+      html += '<div style="space-y:4px">';
+      const max = Math.max(...data.map(d => d.share_pct));
+      data.slice(0, 30).forEach(d => {
+        const pct = d.share_pct || 0;
+        const barW = max > 0 ? Math.round((pct / max) * 100) : 0;
+        const color = d.is_primary_owner ? '#ef4444' : d.is_owner ? '#f97316' : '#3b82f6';
+        const label = d.is_primary_owner ? ' (owner key)' : d.is_owner ? ' (owner miner)' : '';
+        html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">' +
+          '<div style="font-size:11px;color:var(--text-muted);width:50px;flex-shrink:0">UID ' + d.uid + '</div>' +
+          '<div style="flex:1;height:8px;border-radius:4px;background:var(--border);overflow:hidden">' +
+            '<div style="width:' + barW + '%;height:100%;background:' + color + ';border-radius:4px"></div>' +
+          '</div>' +
+          '<div style="font-size:11px;font-family:monospace;width:52px;text-align:right;flex-shrink:0;color:var(--text-secondary)">' + pct.toFixed(2) + '%</div>' +
+          '<div style="font-size:10px;color:var(--text-muted)">' + label + '</div>' +
+          '</div>';
+      });
+      if (data.length > 30) html += '<div style="font-size:11px;color:var(--text-muted)">' + (data.length - 30) + ' more miners...</div>';
+      html += '</div>';
+      el.innerHTML = html;
+    })
+    .catch(() => { el.innerHTML = '<div style="color:#f85149;font-size:13px">Failed to load.</div>'; });
+}
+</script>
+</body>
+</html>
