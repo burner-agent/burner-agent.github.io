@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AlphaRidge.ai — Subnet Intel</title>
+<meta name="theme-color" content="#0d1117">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230d1117'/%3E%3Ccircle cx='50' cy='50' r='42' fill='none' stroke='%2330363d' stroke-width='6'/%3E%3Ccircle cx='50' cy='50' r='26' fill='none' stroke='%23484f58' stroke-width='6'/%3E%3Ccircle cx='50' cy='50' r='11' fill='%233fb950'/%3E%3C/svg%3E">
+<meta name="description" content="Miners on Talisman AI (SN45) analyze social media posts (X/Twitter, Telegram, news articles) to classify subnet relevance, sentiment, and content type…">
+<meta property="og:title" content="AlphaRidge.ai — Subnet Intel">
+<meta property="og:description" content="Miners on Talisman AI (SN45) analyze social media posts (X/Twitter, Telegram, news articles) to classify subnet relevance, sentiment, and content type…">
 <script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
 <style>
   :root {
@@ -39,7 +44,7 @@
 <!-- Scrollable content -->
 <div style="padding: 72px 16px 100px 16px; max-width: 680px; margin: 0 auto;">
 
-  <div style="margin-bottom:16px"><div style="height:4px;border-radius:2px;background:var(--border);overflow:hidden"><div style="width:45%;height:100%;background:#f85149"></div></div><div style="font-size:12px;color:var(--text-muted);margin-top:6px">Early stage · LLM-based social classification with validator re-run sampling is functional but narrow in scope and lacks the breadth/s</div></div>
+  <div style="margin-bottom:16px"><div style="height:4px;border-radius:2px;background:var(--border);overflow:hidden"><div style="width:45%;height:100%;background:#f85149"></div></div><div style="font-size:12px;color:var(--text-muted);margin-top:6px">Early stage · LLM-based social classification with validator re-run sampling is functional but narrow in scope and lacks the breadth/s…</div></div>
 
   
 
@@ -68,7 +73,7 @@
 <!-- Fixed bottom input -->
 <div style="position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);padding:12px 16px;padding-bottom:max(16px,env(safe-area-inset-bottom))">
   <div style="display:flex;gap:10px;max-width:680px;margin:0 auto">
-    <input id="ask-input" type="text" placeholder="Ask disabled in static snapshot"
+    <input id="ask-input" type="text" placeholder="Ask anything about this subnet…"
       style="flex:1;background:var(--surface-elevated);border:1px solid var(--border);border-radius:12px;padding:12px 16px;font-size:16px;color:var(--text-primary);outline:none"
       onkeydown="if(event.key==='Enter')ask()">
     <button onclick="ask()" style="background:#58a6ff22;border:1px solid #58a6ff55;color:#58a6ff;border-radius:12px;padding:12px 20px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap">Ask</button>
@@ -77,6 +82,8 @@
 
 <script>
 const netuid = 45;
+const API_BASE = 'https://dsl-maternity-side-chapel.trycloudflare.com';
+function apiFetch(path){const c=new AbortController();const t=setTimeout(()=>c.abort(),6000);return fetch(API_BASE+path,{signal:c.signal}).then(r=>{clearTimeout(t);if(!r.ok)throw new Error('bad');return r.json()}).catch(()=>fetch(path).then(r=>r.json()));}
 let chatHistory = [];
 let fullText = '';
 
@@ -143,7 +150,7 @@ function ask() {
   addMessage('user', q);
   chatHistory.push({role: 'user', content: q});
   document.getElementById('ask-loading').style.display = 'block';
-  fetch('/api/subnets/' + netuid + '/ask', {
+  fetch(API_BASE + '/api/subnets/' + netuid + '/ask', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({question: q, history: chatHistory.slice(0,-1)})
@@ -157,7 +164,7 @@ function ask() {
   })
   .catch(() => {
     document.getElementById('ask-loading').style.display = 'none';
-    addMessage('assistant', 'Failed — try again.');
+    addMessage('assistant', 'The live analyst is offline right now, so I can\'t answer. Check back in a bit.');
   });
 }
 
@@ -170,8 +177,7 @@ function loadEmissions() {
   el.dataset.loaded = '1';
   el.style.display = 'block';
   el.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:12px 0">Loading emissions...</div>';
-  fetch('/api/subnets/45/emissions')
-    .then(r => r.json())
+  apiFetch('/api/subnets/' + netuid + '/emissions')
     .then(resp => {
       const data = resp.rows || [];
       const rob = resp.recycle_or_burn || 'Burn';

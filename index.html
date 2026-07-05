@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Subnet Intel — Bittensor Subnets</title>
+<meta name="description" content="Live intelligence on every Bittensor subnet: what miners actually do, execution quality scores, prices, emissions, and an AI analyst you can ask questions.">
+<meta property="og:title" content="Subnet Intel — Bittensor Subnets">
+<meta property="og:description" content="What every Bittensor subnet's miners actually do, scored by execution quality — with an AI analyst you can ask.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#0d1117">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230d1117'/%3E%3Ccircle cx='50' cy='50' r='42' fill='none' stroke='%2330363d' stroke-width='6'/%3E%3Ccircle cx='50' cy='50' r='26' fill='none' stroke='%23484f58' stroke-width='6'/%3E%3Ccircle cx='50' cy='50' r='11' fill='%233fb950'/%3E%3C/svg%3E">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
@@ -45,10 +51,15 @@
   #toast.show { opacity:1; }
   .subnet-card { transition: background 0.12s; -webkit-tap-highlight-color: transparent; }
   .subnet-card:active { background: var(--surface-elevated) !important; }
+  html, body { max-width: 100vw; overflow-x: hidden; }
+  #controls { flex-wrap: wrap; }
   @media (max-width: 767px) {
     #table-wrap { display: none; }
     #card-container { display: block; }
     #view-seg { display: none !important; }
+    #view-explainer { display: none !important; }
+    #agent-status { font-size: 10px; padding: 3px 8px; flex-shrink: 0; }
+    #sort-newest { margin-left: 0 !important; }
     #modal {
       align-items: flex-end !important;
       padding: 0 !important;
@@ -88,13 +99,17 @@
       <h1 class="text-2xl font-bold tracking-tight" style="color:var(--text-primary)">Subnet Intel</h1>
       <span class="text-xs hidden sm:inline" style="color:var(--text-muted)">Bittensor subnet intelligence</span>
     </div>
+    <div id="agent-status" class="flex items-center gap-1.5 text-xs rounded-full px-2.5 py-1" style="border:1px solid var(--border);background:var(--surface);color:var(--text-muted)" title="The Ask feature is answered live by an AI analyst agent">
+      <span id="agent-status-dot" style="width:7px;height:7px;border-radius:50%;background:var(--text-muted);display:inline-block"></span>
+      <span id="agent-status-text">Analyst…</span>
+    </div>
   </div>
 
   <!-- Controls -->
-  <div class="mb-3 flex items-center gap-2">
+  <div id="controls" class="mb-3 flex items-center gap-2 flex-wrap">
     <input id="search" type="text" placeholder="Search subnets..."
       class="rounded-lg px-3 py-2 text-sm focus:outline-none flex-1"
-      style="background:var(--surface);border:1px solid var(--border);color:var(--text-primary);max-width:280px"
+      style="background:var(--surface);border:1px solid var(--border);color:var(--text-primary);max-width:280px;min-width:150px"
       oninput="filterRows(this.value)">
 
     <!-- Segmented view control — desktop only -->
@@ -17405,30 +17420,37 @@ function computePriceRanks() {
            (up ? '▲' : '▼') + Math.abs(d) + '</span>';
   }
 
-  // Inject rank into each row's price-rank and quality-rank cells + dataset attrs for sorting
+  // Inject rank into every row for that netuid (flat AND grouped tables) + dataset attrs for sorting
   byPrice.forEach(s => {
-    s.el.dataset.priceRank = s.priceRank;
-    const cell = s.el.querySelector('.price-rank-cell');
-    if (cell) {
-      const prev = baseline ? (baseline[s.netuid] || {}).p : null;
-      cell.innerHTML = '<span style="color:var(--text-muted)">#' + s.priceRank + '</span>' + trendBadge(prev, s.priceRank);
-    }
+    const prev = baseline ? (baseline[s.netuid] || {}).p : null;
+    const html = '<span style="color:var(--text-muted)">#' + s.priceRank + '</span>' + trendBadge(prev, s.priceRank);
+    document.querySelectorAll('tr[data-netuid="' + s.netuid + '"]').forEach(row => {
+      row.dataset.priceRank = s.priceRank;
+      const cell = row.querySelector('.price-rank-cell');
+      if (cell) cell.innerHTML = html;
+    });
   });
 
   data.forEach(s => {
-    s.el.dataset.qualityRank = s.qualityRank || 9999;
-    const cell = s.el.querySelector('.quality-rank-cell');
-    if (!cell) return;
-    if (!s.qualityRank) { cell.innerHTML = '<span style="color:var(--text-muted)">—</span>'; return; }
-    const prev = baseline ? (baseline[s.netuid] || {}).q : null;
-    const gap = s.priceRank - s.qualityRank; // positive = underpriced, negative = overpriced
-    let color = 'var(--text-muted)';
-    if (gap >= 5) color = '#3fb950';
-    else if (gap <= -5) color = '#f85149';
-    const deltaHtml = gap === 0 ? '' :
-      '<span style="font-size:10px;margin-left:4px;color:' + (gap > 0 ? '#3fb950' : '#f85149') + '">' +
-      (gap > 0 ? '+' : '') + gap + '</span>';
-    cell.innerHTML = '<span style="color:' + color + '">#' + s.qualityRank + '</span>' + deltaHtml + trendBadge(prev, s.qualityRank);
+    let html;
+    if (!s.qualityRank) {
+      html = '<span style="color:var(--text-muted)">—</span>';
+    } else {
+      const prev = baseline ? (baseline[s.netuid] || {}).q : null;
+      const gap = s.priceRank - s.qualityRank; // positive = underpriced, negative = overpriced
+      let color = 'var(--text-muted)';
+      if (gap >= 5) color = '#3fb950';
+      else if (gap <= -5) color = '#f85149';
+      const deltaHtml = gap === 0 ? '' :
+        '<span style="font-size:10px;margin-left:4px;color:' + (gap > 0 ? '#3fb950' : '#f85149') + '">' +
+        (gap > 0 ? '+' : '') + gap + '</span>';
+      html = '<span style="color:' + color + '">#' + s.qualityRank + '</span>' + deltaHtml + trendBadge(prev, s.qualityRank);
+    }
+    document.querySelectorAll('tr[data-netuid="' + s.netuid + '"]').forEach(row => {
+      row.dataset.qualityRank = s.qualityRank || 9999;
+      const cell = row.querySelector('.quality-rank-cell');
+      if (cell) cell.innerHTML = html;
+    });
   });
 }
 
@@ -17477,8 +17499,7 @@ document.addEventListener('DOMContentLoaded', () => { applyView(); computePriceR
 
 // ── TAO Flow totals ──────────────────────────────────────────────────────────
 function loadFlowTotals() {
-  fetch(API_BASE + '/api/tao-flow-totals')
-    .then(r => r.json())
+  apiFetch('/api/tao-flow-totals')
     .then(data => {
       const fmtNet = v => {
         if (v == null) return '—';
@@ -17874,6 +17895,49 @@ function renderChatMessage(role, content, usedCode) {
 }
 
 const API_BASE = 'https://dsl-maternity-side-chapel.trycloudflare.com';
+let agentOnline = null; // null = unknown, true/false once probed
+
+// Fetch JSON live-first (agent backend), falling back to the static snapshot baked into this site.
+function apiFetch(path) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 6000);
+  return fetch(API_BASE + path, {signal: ctrl.signal})
+    .then(r => { clearTimeout(t); if (!r.ok) throw new Error('bad status'); return r.json(); })
+    .catch(() => fetch(path).then(r => r.json()));
+}
+
+function setAgentStatus(online) {
+  agentOnline = online;
+  const dot = document.getElementById('agent-status-dot');
+  const text = document.getElementById('agent-status-text');
+  if (!dot || !text) return;
+  dot.style.background = online ? '#3fb950' : 'var(--text-muted)';
+  text.textContent = online ? 'Analyst online' : 'Analyst offline';
+  const wrap = document.getElementById('agent-status');
+  if (wrap) wrap.title = online
+    ? 'The AI analyst is live — open any subnet and ask it questions'
+    : 'The AI analyst is offline right now — data still works, but Ask is unavailable';
+}
+
+function probeAgent() {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 6000);
+  fetch(API_BASE + '/api/tao-flow-totals', {signal: ctrl.signal})
+    .then(r => { clearTimeout(t); setAgentStatus(r.ok); })
+    .catch(() => setAgentStatus(false));
+}
+document.addEventListener('DOMContentLoaded', probeAgent);
+
+// Deprecated subnets: dim them and show a readable name instead of raw "deprecated / deprecated"
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('[data-netuid]').forEach(el => {
+    if ((el.dataset.name || '').trim().toLowerCase() !== 'deprecated') return;
+    el.style.opacity = '0.55';
+    const nameEl = el.querySelector('.font-semibold');
+    if (nameEl) nameEl.innerHTML = 'Subnet ' + el.dataset.netuid +
+      ' <span style="font-weight:400;color:var(--text-muted);font-size:11px">· deprecated</span>';
+  });
+});
 
 function askSubnet() {
   const input = document.getElementById('ask-input');
@@ -17897,7 +17961,8 @@ function askSubnet() {
     })
     .catch(() => {
       document.getElementById('ask-loading').classList.add('hidden');
-      renderChatMessage('assistant', 'Failed to get an answer — try again.');
+      setAgentStatus(false);
+      renderChatMessage('assistant', 'The live analyst is offline right now, so I can\'t answer. The data on this page still works — check back in a bit for questions.');
     });
 }
 
@@ -17911,8 +17976,7 @@ function toggleHistory() {
     return;
   }
   btn.textContent = 'Loading history...';
-  fetch(API_BASE + '/api/subnets/' + currentNetuid + '/history')
-    .then(r => r.json())
+  apiFetch('/api/subnets/' + currentNetuid + '/history')
     .then(resp => {
       const rows = resp.rows || [];
       if (rows.length === 0) {
@@ -17952,8 +18016,7 @@ function showEmissions(event, netuid, name, total) {
 
   if (emissionChart) { emissionChart.destroy(); emissionChart = null; }
 
-  fetch('/api/subnets/' + netuid + '/emissions')
-    .then(r => r.json())
+  apiFetch('/api/subnets/' + netuid + '/emissions')
     .then(resp => {
       document.getElementById('emission-loading').classList.add('hidden');
       const data = resp.rows || [];
@@ -18064,8 +18127,7 @@ function toggleModalEmissions(event) {
   if (body.dataset.loaded === '1') return;
   body.dataset.loaded = '1';
   body.innerHTML = '<div style="color:var(--text-muted);font-size:12px;padding:4px 0">Loading...</div>';
-  fetch('/api/subnets/' + currentNetuid + '/emissions')
-    .then(r => r.json())
+  apiFetch('/api/subnets/' + currentNetuid + '/emissions')
     .then(resp => {
       const data = resp.rows || [];
       const rob = resp.recycle_or_burn || 'Burn';
