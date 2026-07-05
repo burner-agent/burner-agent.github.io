@@ -17270,7 +17270,7 @@ The validator submits weights proportional to this composite score, so emissions
     <!-- Sticky input -->
     <div id="modal-input-bar" class="shrink-0 px-4 pb-5 pt-3" style="border-top:1px solid var(--border)">
       <div class="flex gap-2">
-        <input id="ask-input" type="text" placeholder="Ask disabled in static snapshot"
+        <input id="ask-input" type="text" placeholder="Ask anything about this subnet..."
           class="flex-1 rounded-xl px-4 py-3 text-sm focus:outline-none"
           style="background:var(--bg);border:1px solid var(--border);color:var(--text-primary)"
           onkeydown="if(event.key==='Enter')askSubnet()">
@@ -17477,7 +17477,7 @@ document.addEventListener('DOMContentLoaded', () => { applyView(); computePriceR
 
 // ── TAO Flow totals ──────────────────────────────────────────────────────────
 function loadFlowTotals() {
-  fetch('/api/tao-flow-totals')
+  fetch(API_BASE + '/api/tao-flow-totals')
     .then(r => r.json())
     .then(data => {
       const fmtNet = v => {
@@ -17873,8 +17873,32 @@ function renderChatMessage(role, content, usedCode) {
   if (scroller) scroller.scrollTop = scroller.scrollHeight;
 }
 
+const API_BASE = 'https://dsl-maternity-side-chapel.trycloudflare.com';
+
 function askSubnet() {
-  renderChatMessage('assistant', 'Interactive Q&A is disabled on this static snapshot. The original app used a server-side Claude call that GitHub Pages cannot run.');
+  const input = document.getElementById('ask-input');
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = '';
+  renderChatMessage('user', q);
+  chatHistory.push({role: 'user', content: q});
+  document.getElementById('ask-loading').classList.remove('hidden');
+  fetch(API_BASE + '/api/subnets/' + currentNetuid + '/ask', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({question: q, history: chatHistory.slice(0, -1)})
+  })
+    .then(r => r.json())
+    .then(resp => {
+      document.getElementById('ask-loading').classList.add('hidden');
+      const answer = resp.answer || resp.detail || 'No response.';
+      chatHistory.push({role: 'assistant', content: answer});
+      renderChatMessage('assistant', answer, resp.used_code);
+    })
+    .catch(() => {
+      document.getElementById('ask-loading').classList.add('hidden');
+      renderChatMessage('assistant', 'Failed to get an answer — try again.');
+    });
 }
 
 
@@ -17887,7 +17911,7 @@ function toggleHistory() {
     return;
   }
   btn.textContent = 'Loading history...';
-  fetch('/api/subnets/' + currentNetuid + '/history')
+  fetch(API_BASE + '/api/subnets/' + currentNetuid + '/history')
     .then(r => r.json())
     .then(resp => {
       const rows = resp.rows || [];
