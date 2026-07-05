@@ -107,12 +107,6 @@
       style="background:var(--surface);border:1px solid var(--border);color:var(--text-primary);max-width:280px;min-width:150px"
       oninput="filterRows(this.value)">
 
-    <button id="sort-new-code" onclick="sortByNewCode()"
-      class="px-3 py-2 rounded-lg text-xs font-semibold transition-colors"
-      style="background:var(--surface);border:1px solid var(--border);color:var(--text-muted)"
-      title="Subnets where the miner task fundamentally changed (based on code diffs)">
-      Task changes
-    </button>
     <button id="sort-coldkey-swap" onclick="sortByColdkeySwap()"
       class="px-3 py-2 rounded-lg text-xs font-semibold transition-colors"
       style="background:var(--surface);border:1px solid var(--border);color:var(--text-muted)"
@@ -10753,38 +10747,6 @@ function loadADR() {
   }).catch(() => {});
 }
 
-let newCodeSortActive = false;
-function sortByNewCode() {
-  newCodeSortActive = !newCodeSortActive;
-  const btn = document.getElementById('sort-new-code');
-  if (newCodeSortActive) {
-    setView('flat');
-    const tbody = document.getElementById('subnet-table');
-    const rows = Array.from(tbody.querySelectorAll('tr[data-name]'));
-    const hasChanges = rows.some(r => r.dataset.newCode === '1');
-    if (!hasChanges) {
-      newCodeSortActive = false;
-      showToast('No major task changes detected yet — analyzer runs daily');
-      return;
-    }
-    btn.style.color = '#a78bfa';
-    btn.style.borderColor = '#7c3aed';
-    rows.sort((a, b) => {
-      const aC = a.dataset.newCode === '1', bC = b.dataset.newCode === '1';
-      if (aC !== bC) return aC ? -1 : 1;
-      const da = a.dataset.commitDate || '', db_ = b.dataset.commitDate || '';
-      return db_ > da ? 1 : db_ < da ? -1 : 0;
-    });
-    rows.forEach(r => tbody.appendChild(r));
-  } else {
-    btn.style.color = 'var(--text-muted)';
-    btn.style.borderColor = 'var(--border)';
-    const tbody = document.getElementById('subnet-table');
-    const rows = Array.from(tbody.querySelectorAll('tr[data-name]'));
-    rows.sort((a, b) => parseInt(a.dataset.netuid||0) - parseInt(b.dataset.netuid||0));
-    rows.forEach(r => tbody.appendChild(r));
-  }
-}
 
 let ownerChangeSortActive = false;
 function sortByOwnerChange() {
