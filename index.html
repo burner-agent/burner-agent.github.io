@@ -17763,13 +17763,17 @@ function loadADR() {
     list.forEach(r => {
       const inPool = parseFloat(r.alpha_in_pool);
       const out = parseFloat(r.alpha_circulating);
-      if (inPool > 0 && out >= 0) byId[r.netuid] = out / inPool;
+      if (inPool > 0 && out >= 0) byId[r.netuid] = {adr: out / inPool, out: out, inPool: inPool};
     });
+    const fmt = v => Math.round(v).toLocaleString('en-US');
     document.querySelectorAll('tr[data-netuid]').forEach(row => {
-      const adr = byId[row.dataset.netuid];
-      row.dataset.adr = (adr != null) ? adr : -1;
+      const d = byId[row.dataset.netuid];
+      row.dataset.adr = d ? d.adr : -1;
       const cell = row.querySelector('.adr-cell');
-      if (cell && adr != null) cell.textContent = adr.toFixed(2);
+      if (cell && d) {
+        cell.textContent = d.adr.toFixed(2);
+        cell.title = 'Alpha out (owned by users): ' + fmt(d.out) + '\nAlpha in (liquidity pool): ' + fmt(d.inPool);
+      }
     });
   }).catch(() => {});
 }
